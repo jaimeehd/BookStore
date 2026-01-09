@@ -29,7 +29,7 @@
     }
 
     function generateBookCardHTML(book) {
-        const imageSrc = book.imageFile ? `${BASE_PATH}images/${book.imageFile}` : PLACEHOLDER_IMAGE;
+        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
         return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div></div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
