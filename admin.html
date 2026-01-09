@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - El Rincón del Lector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+	  <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <main id="app-root">
+        <section class="book-listing-section">
+            <header class="hero-header admin-header">
+                <div class="hero-content">
+                    <h1>Panel de Administración</h1>
+                    <p class="subtitle">Haga clic en un libro para editar su información.</p>
+                </div>
+            </header>
+            <div class="listing-content-wrapper">
+                <h3 class="section-title">Colección Actual</h3>
+                
+                <!-- Buscador -->
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Buscar por título, autor, género o colección..."
+                    >
+                    <button id="clear-search" class="clear-search-btn" title="Limpiar búsqueda">&times;</button>
+                </div>
+                <p id="search-results-info" class="search-results-info"></p>
+                
+                <div id="book-grid" class="book-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <section class="json-export-section">
+        <h2>Exportar Datos</h2>
+        <p>Una vez que haya terminado de editar, haga clic en el botón para generar el JSON actualizado. <strong>Debe copiar este contenido y reemplazar el contenido del archivo `books.json` manualmente.</strong></p>
+        <button id="export-json-btn">Generar y Copiar JSON</button>
+        <textarea id="json-output" readonly placeholder="Aquí aparecerá el contenido del archivo books.json actualizado..."></textarea>
+    </section>
+
+    <footer class="main-footer">
+        <p>&copy; 2023 El Rincón del Lector - Panel de Administración</p>
+    </footer>
+
+    <!-- Botón flotante para añadir nuevo libro -->
+    <button id="add-book-btn" class="fab" title="Añadir nuevo libro">+</button>
+
+    <!-- Modal para el Formulario de Edición (oculto por defecto) -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content edit-modal-content">
+            <button class="modal-close">&times;</button>
+            <h3 id="modal-title" class="section-title">Editar Libro</h3>
+            <form id="edit-book-form" class="edit-form"></form>
+        </div>
+    </div>
+	
+	<script src="js/config.js"></script>
+    <script src="js/admin.js" defer></script>
+</body>
+</html>

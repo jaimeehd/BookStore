@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librería El Rincón del Lector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <main id="app-root">
+        <section id="book-listing" class="book-listing-section">
+            <header class="hero-header">
+                <div class="hero-content">
+                    <h1>El Rincón del Lector</h1>
+                    <p class="subtitle">Historias que merecen una segunda oportunidad</p>
+                    <p class="cta-text">Explora nuestra colección de tesoros literarios de segunda mano y encuentra tu próxima aventura.</p>
+                </div>
+            </header>
+            <div class="listing-content-wrapper">
+				<div class="search-container" id="search-container">
+					<form class="search-form" id="search-form" role="search">
+						<input type="search" id="search-input" placeholder="Buscar por título, autor o género...">
+					</form>
+					<button id="clear-search-btn" class="clear-search-btn" title="Limpiar búsqueda">&times;</button>
+				</div>
+                <h3 class="section-title">Nuestra Colección</h3>
+                <div id="book-grid" class="book-grid"></div>
+            </div>
+        </section>
+
+        <section id="book-detail-view" class="book-detail-view hidden">
+            <button class="back-button">&larr; Volver a la colección</button>
+            <article id="book-detail-content" class="book-detail-content"></article>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2023 El Rincón del Lector. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- =============================================================== -->
+    <!-- NUEVO: Estructura del Modal para la imagen (oculto por defecto) -->
+    <!-- =============================================================== -->
+    <div id="image-modal" class="modal-overlay">
+        <button class="modal-close">&times;</button>
+        <div class="modal-content">
+            <img src="" alt="Portada del libro ampliada" class="modal-image">
+        </div>
+    </div>
+	
+	<script src="js/config.js"></script>
+    <script src="js/script.js" defer></script>
+</body>
+</html>
