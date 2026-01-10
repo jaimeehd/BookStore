@@ -34,7 +34,7 @@ main {
 
 /* --- Cabecera Hero --- */
 .hero-header {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/photo-1507842217343-583bb7270b66.jpg') no-repeat center center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/photo-1507842217343-583bb7270b66.jpg') no-repeat center center/cover;
     color: white;
     height: 35vh;
     max-height: 400px;
