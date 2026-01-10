@@ -24,52 +24,178 @@
     <meta name="twitter:description" content="Marguerite Yourcenar - Líteratura Contemporanea. Usado - Buen estado. Precio: $ 6.000. Es favorita de muchos gobernantes, cuya redacción es toda una aventura y gira alrededor de ese hombre solitario, que eje...">
     <meta name="twitter:image" content="https://jaimeehd.github.io/bookstore/images/IMG_20250330_212327.jpg">
     
-    <!-- Redirección -->
-    <meta http-equiv="refresh" content="0; url=https://jaimeehd.github.io/bookstore/index.html#libro/1767828570488">
-    <script>
-        window.location.href = 'https://jaimeehd.github.io/bookstore/index.html#libro/1767828570488';
-    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --primary-color: #5D4037;
+            --secondary-color: #D7CCC8;
+            --background-color: #F5F5F5;
+            --accent-color: #8D6E63;
+            --font-primary: 'Merriweather', serif;
+            --font-secondary: 'Roboto', sans-serif;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: var(--font-secondary);
+            background-color: var(--background-color);
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-family: var(--font-primary);
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
         .container {
-            text-align: center;
-            padding: 2rem;
-        }
-        h1 { margin-bottom: 1rem; font-size: 2rem; }
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 4px solid white;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            max-width: 900px;
             margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .book-info {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
-        a {
+        
+        .book-cover {
+            flex-shrink: 0;
+            width: 250px;
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .book-details {
+            flex-grow: 1;
+        }
+        
+        .book-title {
+            font-family: var(--font-primary);
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .book-author {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .book-meta {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .book-meta li {
+            padding: 0.3rem 0;
+            color: #444;
+        }
+        
+        .book-description {
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
             color: white;
-            text-decoration: underline;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        
+        .footer {
+            margin-top: auto;
+            background-color: #3E2723;
+            color: var(--secondary-color);
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .book-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .book-cover {
+                width: 200px;
+            }
+            
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Redirigiendo...</h1>
-        <div class="spinner"></div>
-        <p>Si no eres redirigido automáticamente, <a href="https://jaimeehd.github.io/bookstore/index.html#libro/1767828570488">haz clic aquí</a>.</p>
-    </div>
+    <header class="header">
+        <h1>El Rincón del Lector</h1>
+    </header>
+    
+    <main class="container">
+        <div class="book-info">
+            <div class="book-cover">
+                <img src="https://jaimeehd.github.io/bookstore/images/IMG_20250330_212327.jpg" alt="Portada de Memorias de Adriano">
+            </div>
+            <div class="book-details">
+                <h2 class="book-title">Memorias de Adriano</h2>
+                <p class="book-author">por Marguerite Yourcenar</p>
+                <ul class="book-meta">
+                    <li><strong>Género:</strong> Líteratura Contemporanea</li>
+                    <li><strong>Estado:</strong> Usado - Buen estado</li>
+                    <li><strong>Precio:</strong> $ 6.000</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="book-description">
+            <p>Es favorita de muchos gobernantes, cuya redacción es toda una aventura y gira alrededor de ese hombre solitario, que ejerció el poder absoluto, que cambió la vida de sus contemporaneos y en algunos elementos está emparentado con el modo de gobernar actual.</p>
+        </div>
+        
+        <a href="https://jaimeehd.github.io/bookstore/index.html#libro/1767828570488" class="cta-button">Ver en la tienda completa →</a>
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2023 El Rincón del Lector. Todos los derechos reservados.</p>
+    </footer>
 </body>
 </html>
