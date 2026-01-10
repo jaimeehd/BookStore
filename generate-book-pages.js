@@ -139,11 +139,14 @@ function generateBookPage(book) {
         .book-cover {
             flex-shrink: 0;
             width: 250px;
+            max-height: 375px;
         }
         
         .book-cover img {
             width: 100%;
             height: auto;
+            max-height: 375px;
+            object-fit: contain;
             border-radius: 5px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
