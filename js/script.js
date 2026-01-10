@@ -5,11 +5,11 @@
     const BASE_PATH = window.BASE_PATH || '';
     const PLACEHOLDER_IMAGE = `${BASE_PATH}/images/placeholder.jpg`;
 
-	let books = []; 
+    let books = []; 
     let lastScrollPosition = 0;
     let lastSelectedBookId = null;
 
-	// NUEVO: Función asíncrona para cargar los libros desde el archivo JSON.
+    // NUEVO: Función asíncrona para cargar los libros desde el archivo JSON.
     async function fetchBooks() {
         try {
             const response = await fetch(`${BASE_PATH}/books.json`);
@@ -20,11 +20,44 @@
         } catch (error) {
             console.error('No se pudieron cargar los libros:', error);
             alert("Error: No se pudo cargar el archivo books.json. Asegúrese de estar usando un servidor local (como 'Live Server' en VS Code). Revise la consola para más detalles.");
-            return []; // Devolver un array vacío para que la app no se rompa.
+            return [];
         }
     }
-	
-    
+
+    // --- NUEVO: Sistema de Routing ---
+    const router = {
+        /**
+         * Obtiene el ID del libro desde la URL hash
+         * Formato esperado: #libro/123
+         */
+        getBookIdFromHash: () => {
+            const hash = window.location.hash;
+            const match = hash.match(/^#libro\/(\d+)$/);
+            return match ? parseInt(match[1], 10) : null;
+        },
+
+        /**
+         * Navega a la vista de detalle de un libro
+         */
+        navigateToBook: (bookId) => {
+            window.location.hash = `#libro/${bookId}`;
+        },
+
+        /**
+         * Navega a la vista de listado
+         */
+        navigateToHome: () => {
+            window.location.hash = '';
+        },
+
+        /**
+         * Obtiene la URL completa para compartir un libro
+         */
+        getShareableUrl: (bookId) => {
+            const baseUrl = window.location.origin + window.location.pathname;
+            return `${baseUrl}#libro/${bookId}`;
+        }
+    };
 
     // --- 2. Funciones Puras de Renderizado (Generadores de HTML) ---
     function generatePriceHTML(book) {
@@ -46,42 +79,42 @@
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
-        return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><span class="status-badge ${statusClass}">${statusText}</span></div></div>`;
+        
+        // NUEVO: Agregamos el botón de compartir
+        return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><div class="book-detail__actions"><span class="status-badge ${statusClass}">${statusText}</span><button class="share-button" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Compartir</button></div></div></div>`;
     }
     
     // --- 3. Punto de Entrada Principal de la Aplicación ---
     document.addEventListener('DOMContentLoaded', () => {
-         // La función 'main' es asíncrona para poder usar 'await' al llamar a fetchBooks.
         async function main() {
-            // Primero, cargamos los datos.
             books = await fetchBooks();
 
-        // --- 3.1. Referencias al DOM ---
-        const bookGrid = document.getElementById('book-grid');
-        const bookListingView = document.getElementById('book-listing');
-        const bookDetailView = document.getElementById('book-detail-view');
-        const bookDetailContent = document.getElementById('book-detail-content');
-        const backButton = bookDetailView.querySelector('.back-button');
-        const imageModal = document.getElementById('image-modal');
-        const modalImage = imageModal.querySelector('.modal-image');
-        const modalCloseButton = imageModal.querySelector('.modal-close');
-		  const searchContainer = document.getElementById('search-container');
+            // --- 3.1. Referencias al DOM ---
+            const bookGrid = document.getElementById('book-grid');
+            const bookListingView = document.getElementById('book-listing');
+            const bookDetailView = document.getElementById('book-detail-view');
+            const bookDetailContent = document.getElementById('book-detail-content');
+            const backButton = bookDetailView.querySelector('.back-button');
+            const imageModal = document.getElementById('image-modal');
+            const modalImage = imageModal.querySelector('.modal-image');
+            const modalCloseButton = imageModal.querySelector('.modal-close');
+            const searchContainer = document.getElementById('search-container');
             const searchInput = document.getElementById('search-input');
             const searchForm = document.getElementById('search-form');
             const clearSearchBtn = document.getElementById('clear-search-btn');
 
-        // Verificación de robustez
-        if (!bookGrid || !bookListingView || !bookDetailView || !bookDetailContent || !backButton || !imageModal) {
-            console.error("Error de inicialización: Faltan elementos esenciales en el DOM.");
-            return;
-        }
-		
-		if (books.length === 0) {
-			bookGrid.innerHTML = `<p class="no-results-message">No se pudieron cargar los libros. Intente recargar la página.</p>`;
-            return;
-        }
-		
-		function renderGrid(searchTerm = '') {
+            // Verificación de robustez
+            if (!bookGrid || !bookListingView || !bookDetailView || !bookDetailContent || !backButton || !imageModal) {
+                console.error("Error de inicialización: Faltan elementos esenciales en el DOM.");
+                return;
+            }
+            
+            if (books.length === 0) {
+                bookGrid.innerHTML = `<p class="no-results-message">No se pudieron cargar los libros. Intente recargar la página.</p>`;
+                return;
+            }
+            
+            function renderGrid(searchTerm = '') {
                 const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
                 
                 const filteredBooks = books.filter(book => {
@@ -97,105 +130,197 @@
                 } else {
                     bookGrid.innerHTML = `<p class="no-results-message">No se encontraron libros para tu búsqueda.</p>`;
                 }
-        }
-
-
-        // --- 3.2. Gestores (Managers) de Lógica ---
-        const modalManager = {
-            open: (imageSrc) => {
-                modalImage.src = imageSrc;
-                imageModal.classList.add('visible');
-                document.body.classList.add('no-scroll');
-            },
-            close: () => {
-                imageModal.classList.remove('visible');
-                document.body.classList.remove('no-scroll');
             }
-        };
 
-        const viewManager = {
-            showGridView: () => {
-                bookListingView.classList.remove('hidden');
-                bookDetailView.classList.add('hidden');
-                requestAnimationFrame(() => {
-                    window.scrollTo(0, lastScrollPosition);
-                    if (lastSelectedBookId) {
-                        const currentlySelected = bookGrid.querySelector('.book-card--selected');
-                        if (currentlySelected) currentlySelected.classList.remove('book-card--selected');
-                        const lastCard = bookGrid.querySelector(`[data-book-id="${lastSelectedBookId}"]`);
-                        if (lastCard) lastCard.classList.add('book-card--selected');
+            // --- 3.2. Gestores (Managers) de Lógica ---
+            const modalManager = {
+                open: (imageSrc) => {
+                    modalImage.src = imageSrc;
+                    imageModal.classList.add('visible');
+                    document.body.classList.add('no-scroll');
+                },
+                close: () => {
+                    imageModal.classList.remove('visible');
+                    document.body.classList.remove('no-scroll');
+                }
+            };
+
+            const viewManager = {
+                showGridView: () => {
+                    // Si el grid está vacío, renderizarlo primero
+                    if (bookGrid.children.length === 0) {
+                        renderGrid();
                     }
-                });
-            },
-            showDetailView: (bookId) => {
-                const book = books.find(b => b.id === bookId);
-                if (book) {
-                    bookDetailContent.innerHTML = generateBookDetailHTML(book);
-                    bookListingView.classList.add('hidden');
-                    bookDetailView.classList.remove('hidden');
-                    window.scrollTo(0, 0);
+                    
+                    bookListingView.classList.remove('hidden');
+                    bookDetailView.classList.add('hidden');
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, lastScrollPosition);
+                        if (lastSelectedBookId) {
+                            const currentlySelected = bookGrid.querySelector('.book-card--selected');
+                            if (currentlySelected) currentlySelected.classList.remove('book-card--selected');
+                            const lastCard = bookGrid.querySelector(`[data-book-id="${lastSelectedBookId}"]`);
+                            if (lastCard) lastCard.classList.add('book-card--selected');
+                        }
+                    });
+                },
+                showDetailView: (bookId) => {
+                    const book = books.find(b => b.id === bookId);
+                    if (book) {
+                        bookDetailContent.innerHTML = generateBookDetailHTML(book);
+                        bookListingView.classList.add('hidden');
+                        bookDetailView.classList.remove('hidden');
+                        window.scrollTo(0, 0);
+                    } else {
+                        // Si el libro no existe, redirigir al home
+                        router.navigateToHome();
+                    }
+                }
+            };
+
+            // --- NUEVO: Función para copiar el enlace al portapapeles ---
+            function copyShareLink(bookId) {
+                const shareUrl = router.getShareableUrl(bookId);
+                
+                // Usamos la API del portapapeles moderna
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl)
+                        .then(() => {
+                            showNotification('¡Enlace copiado al portapapeles!');
+                        })
+                        .catch(err => {
+                            console.error('Error al copiar:', err);
+                            fallbackCopyToClipboard(shareUrl);
+                        });
+                } else {
+                    // Fallback para navegadores antiguos
+                    fallbackCopyToClipboard(shareUrl);
                 }
             }
-        };
 
-        // --- 3.3. Asignación de Event Listeners ---
-        // Navegación principal
-        bookGrid.addEventListener('click', (event) => {
-            const card = event.target.closest('.book-card');
-            if (card && card.dataset.bookId) {
-                const bookId = parseInt(card.dataset.bookId, 10);
-                lastScrollPosition = window.scrollY;
-                lastSelectedBookId = bookId;
-                viewManager.showDetailView(bookId);
-            }
-        });
-        backButton.addEventListener('click', viewManager.showGridView);
-
-        // Lógica del modal
-        bookDetailContent.addEventListener('click', (event) => {
-            if (event.target.classList.contains('book-detail__cover')) {
-                modalManager.open(event.target.src);
-            }
-        });
-        modalCloseButton.addEventListener('click', modalManager.close);
-        imageModal.addEventListener('click', (event) => {
-            if (event.target === imageModal) {
-                modalManager.close();
-            }
-        });
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && imageModal.classList.contains('visible')) {
-                modalManager.close();
-            }
-        });
-		
-		searchForm.addEventListener('submit', (e) => e.preventDefault()); // Evita que la página se recargue al presionar Enter
-
-        searchInput.addEventListener('input', (event) => {
-			const searchTerm = event.target.value;
-            renderGrid(searchTerm);
+            // Fallback para copiar en navegadores que no soportan la API moderna
+            function fallbackCopyToClipboard(text) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
                 
-            // Muestra u oculta el botón de limpiar
-            if (searchTerm.length > 0) {
-                searchContainer.classList.add('has-text');
-            } else {
-                searchContainer.classList.remove('has-text');
-            }
-        });
-		 clearSearchBtn.addEventListener('click', () => {
-                searchInput.value = ''; // Limpia el campo
+                try {
+                    document.execCommand('copy');
+                    showNotification('¡Enlace copiado al portapapeles!');
+                } catch (err) {
+                    showNotification('No se pudo copiar. URL: ' + text, true);
+                }
                 
-                // Creamos y disparamos un evento 'input' para que la lógica de búsqueda se ejecute
-                const inputEvent = new Event('input', { bubbles: true });
-                searchInput.dispatchEvent(inputEvent);
+                document.body.removeChild(textArea);
+            }
 
-                searchInput.focus(); // Devolvemos el foco al campo de búsqueda
+            // Función para mostrar notificaciones temporales
+            function showNotification(message, isError = false) {
+                const notification = document.createElement('div');
+                notification.className = `notification ${isError ? 'notification--error' : 'notification--success'}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                // Animación de entrada
+                setTimeout(() => notification.classList.add('visible'), 10);
+                
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notification.classList.remove('visible');
+                    setTimeout(() => document.body.removeChild(notification), 300);
+                }, 3000);
+            }
+
+            // --- 3.3. Asignación de Event Listeners ---
+            
+            // Navegación principal
+            bookGrid.addEventListener('click', (event) => {
+                const card = event.target.closest('.book-card');
+                if (card && card.dataset.bookId) {
+                    const bookId = parseInt(card.dataset.bookId, 10);
+                    lastScrollPosition = window.scrollY;
+                    lastSelectedBookId = bookId;
+                    router.navigateToBook(bookId);
+                }
+            });
+
+            backButton.addEventListener('click', () => {
+                router.navigateToHome();
+            });
+
+            // NUEVO: Event listener para el botón de compartir
+            bookDetailContent.addEventListener('click', (event) => {
+                // Lógica del modal (existente)
+                if (event.target.classList.contains('book-detail__cover')) {
+                    modalManager.open(event.target.src);
+                }
+                
+                // NUEVO: Lógica del botón compartir
+                if (event.target.classList.contains('share-button')) {
+                    const bookId = parseInt(event.target.dataset.bookId, 10);
+                    copyShareLink(bookId);
+                }
+            });
+
+            // Lógica del modal
+            modalCloseButton.addEventListener('click', modalManager.close);
+            imageModal.addEventListener('click', (event) => {
+                if (event.target === imageModal) {
+                    modalManager.close();
+                }
+            });
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && imageModal.classList.contains('visible')) {
+                    modalManager.close();
+                }
             });
             
-		// Renderizado Inicial
-        renderGrid();
-	}
-        
+            // Búsqueda
+            searchForm.addEventListener('submit', (e) => e.preventDefault());
+
+            searchInput.addEventListener('input', (event) => {
+                const searchTerm = event.target.value;
+                renderGrid(searchTerm);
+                    
+                if (searchTerm.length > 0) {
+                    searchContainer.classList.add('has-text');
+                } else {
+                    searchContainer.classList.remove('has-text');
+                }
+            });
+
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                const inputEvent = new Event('input', { bubbles: true });
+                searchInput.dispatchEvent(inputEvent);
+                searchInput.focus();
+            });
+
+            // --- NUEVO: Event listener para cambios en el hash ---
+            window.addEventListener('hashchange', () => {
+                const bookId = router.getBookIdFromHash();
+                
+                if (bookId) {
+                    viewManager.showDetailView(bookId);
+                } else {
+                    viewManager.showGridView();
+                }
+            });
+
+            // --- NUEVO: Procesamiento inicial de la URL ---
+            const initialBookId = router.getBookIdFromHash();
+            
+            if (initialBookId) {
+                // Si hay un libro en la URL, mostrarlo directamente
+                viewManager.showDetailView(initialBookId);
+            } else {
+                // Renderizado normal del grid
+                renderGrid();
+            }
+        }
         
         // Ejecutamos la función principal de nuestra aplicación.
         main();
