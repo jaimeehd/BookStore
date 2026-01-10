@@ -229,9 +229,9 @@
 
             // Funciones de compartir
             function copyShareLink(bookId) {
-                // Usar la página libro.html para compartir
+                // Usar las páginas estáticas generadas
                 const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-                const shareUrl = `${baseUrl}libro.html?id=${bookId}`;
+                const shareUrl = `${baseUrl}libro-${bookId}.html`;
                 
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(shareUrl)
@@ -248,9 +248,9 @@
             }
 
             function shareOnFacebook(bookId) {
-                // Usar la página libro.html para compartir en Facebook
+                // Usar las páginas estáticas generadas
                 const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-                const shareUrl = `${baseUrl}libro.html?id=${bookId}`;
+                const shareUrl = `${baseUrl}libro-${bookId}.html`;
                 const encodedUrl = encodeURIComponent(shareUrl);
                 const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
                 window.open(facebookUrl, 'facebook-share', 'width=600,height=400');
