@@ -5,6 +5,11 @@
     const BASE_PATH = window.BASE_PATH || '';
     const PLACEHOLDER_IMAGE = `${BASE_PATH}/images/placeholder.jpg`;
 
+    document.documentElement.style.setProperty(
+    '--hero-bg-image', 
+    `url('${BASE_PATH}/images/photo-1507842217343-583bb7270b66.jpg')`
+);
+
     let books = []; 
     let lastScrollPosition = 0;
     let lastSelectedBookId = null;
