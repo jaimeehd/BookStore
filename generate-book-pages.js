@@ -19,8 +19,8 @@ function generateBookPage(book) {
     
     const description = `${book.author} - ${book.genre}. ${book.condition}. Precio: ${price}. ${book.description.substring(0, 120)}...`;
     const imageUrl = book.imageFile 
-        ? `https://jaimehd.github.io${BASE_PATH}/images/${book.imageFile}`
-        : `https://jaimehd.github.io${BASE_PATH}/images/placeholder.jpg`;
+        ? `https://jaimeehd.github.io${BASE_PATH}/images/${book.imageFile}`
+        : `https://jaimeehd.github.io${BASE_PATH}/images/placeholder.jpg`;
     
     return `<!DOCTYPE html>
 <html lang="es">
@@ -36,7 +36,7 @@ function generateBookPage(book) {
     <meta property="og:site_name" content="El Rincón del Lector">
     <meta property="og:title" content="${book.title} - El Rincón del Lector">
     <meta property="og:description" content="${description}">
-    <meta property="og:url" content="https://jaimehd.github.io${BASE_PATH}/libro-${book.id}.html">
+    <meta property="og:url" content="https://jaimeehd.github.io${BASE_PATH}/libro-${book.id}.html">
     <meta property="og:image" content="${imageUrl}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -78,5 +78,5 @@ books.forEach(book => {
 console.log(`\n🎉 Se generaron ${books.length} páginas HTML`);
 console.log('\n📋 URLs para compartir en Facebook:');
 books.forEach(book => {
-    console.log(`   - https://jaimehd.github.io${BASE_PATH}/libro-${book.id}.html`);
+    console.log(`   - https://jaimeehd.github.io${BASE_PATH}/libro-${book.id}.html`);
 });
