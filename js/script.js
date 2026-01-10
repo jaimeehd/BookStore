@@ -8,6 +8,7 @@
     let books = []; 
     let lastScrollPosition = 0;
     let lastSelectedBookId = null;
+     let isGridRendered = false; // NUEVO: Flag para saber si el grid ya fue renderizado
 
     // NUEVO: Función asíncrona para cargar los libros desde el archivo JSON.
     async function fetchBooks() {
@@ -130,6 +131,8 @@
                 } else {
                     bookGrid.innerHTML = `<p class="no-results-message">No se encontraron libros para tu búsqueda.</p>`;
                 }
+
+                isGridRendered = true; // Marcamos que el grid ya fue renderizado
             }
 
             // --- 3.2. Gestores (Managers) de Lógica ---
@@ -148,10 +151,11 @@
             const viewManager = {
                 showGridView: () => {
                     // Si el grid está vacío, renderizarlo primero
-                    if (bookGrid.children.length === 0) {
+                    if (!isGridRendered) {
                         renderGrid();
                     }
                     
+
                     bookListingView.classList.remove('hidden');
                     bookDetailView.classList.add('hidden');
                     requestAnimationFrame(() => {
