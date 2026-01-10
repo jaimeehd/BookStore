@@ -506,3 +506,39 @@ main {
         justify-content: center;
     }
 }
+
+/* ===================================================================== */
+/* ACTUALIZACIÓN: Estilos para múltiples botones de compartir           */
+/* ===================================================================== */
+.share-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.share-button--copy {
+    background-color: var(--accent-color);
+}
+
+.share-button--copy:hover {
+    background-color: var(--primary-color);
+}
+
+.share-button--facebook {
+    background-color: #1877F2;
+}
+
+.share-button--facebook:hover {
+    background-color: #0C63D4;
+}
+
+@media (max-width: 768px) {
+    .share-buttons {
+        width: 100%;
+    }
+    
+    .share-button {
+        flex: 1;
+        min-width: 140px;
+    }
+}

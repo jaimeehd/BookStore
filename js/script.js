@@ -5,17 +5,12 @@
     const BASE_PATH = window.BASE_PATH || '';
     const PLACEHOLDER_IMAGE = `${BASE_PATH}/images/placeholder.jpg`;
 
-    document.documentElement.style.setProperty(
-    '--hero-bg-image', 
-    `url('${BASE_PATH}/images/photo-1507842217343-583bb7270b66.jpg')`
-);
-
     let books = []; 
     let lastScrollPosition = 0;
     let lastSelectedBookId = null;
-     let isGridRendered = false; // NUEVO: Flag para saber si el grid ya fue renderizado
+    let isGridRendered = false; // Flag para saber si el grid ya fue renderizado
 
-    // NUEVO: Función asíncrona para cargar los libros desde el archivo JSON.
+    // Función asíncrona para cargar los libros desde el archivo JSON.
     async function fetchBooks() {
         try {
             const response = await fetch(`${BASE_PATH}/books.json`);
@@ -30,42 +25,88 @@
         }
     }
 
-    // --- NUEVO: Sistema de Routing ---
+    // --- 2. Sistema de Routing ---
     const router = {
-        /**
-         * Obtiene el ID del libro desde la URL hash
-         * Formato esperado: #libro/123
-         */
         getBookIdFromHash: () => {
             const hash = window.location.hash;
             const match = hash.match(/^#libro\/(\d+)$/);
             return match ? parseInt(match[1], 10) : null;
         },
 
-        /**
-         * Navega a la vista de detalle de un libro
-         */
         navigateToBook: (bookId) => {
             window.location.hash = `#libro/${bookId}`;
         },
 
-        /**
-         * Navega a la vista de listado
-         */
         navigateToHome: () => {
             window.location.hash = '';
         },
 
-        /**
-         * Obtiene la URL completa para compartir un libro
-         */
         getShareableUrl: (bookId) => {
             const baseUrl = window.location.origin + window.location.pathname;
             return `${baseUrl}#libro/${bookId}`;
         }
     };
 
-    // --- 2. Funciones Puras de Renderizado (Generadores de HTML) ---
+    // --- 3. Gestor de metadatos para redes sociales ---
+    const metaManager = {
+        setMetaTag(property, content) {
+            let meta = document.querySelector(`meta[property="${property}"]`);
+            if (!meta) {
+                meta = document.querySelector(`meta[name="${property}"]`);
+            }
+            if (meta) {
+                meta.setAttribute('content', content);
+            }
+        },
+        
+        updateBookMeta(book) {
+            const shareUrl = router.getShareableUrl(book.id);
+            const baseImageUrl = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}${BASE_PATH}`;
+            const imageSrc = book.imageFile 
+                ? `${baseImageUrl}/images/${book.imageFile}`
+                : `${baseImageUrl}/images/placeholder.jpg`;
+            
+            const priceFormatter = new Intl.NumberFormat('es-CO', { 
+                style: 'currency', 
+                currency: 'COP', 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0 
+            });
+            const price = book.discountPrice && book.discountPrice < book.price 
+                ? priceFormatter.format(book.discountPrice) 
+                : priceFormatter.format(book.price);
+            
+            const description = `${book.author} - ${book.genre}. ${book.condition}. Precio: ${price}. ${book.description.substring(0, 100)}...`;
+            
+            this.setMetaTag('og:title', `${book.title} - El Rincón del Lector`);
+            this.setMetaTag('og:description', description);
+            this.setMetaTag('og:url', shareUrl);
+            this.setMetaTag('og:image', imageSrc);
+            this.setMetaTag('twitter:title', book.title);
+            this.setMetaTag('twitter:description', description);
+            this.setMetaTag('twitter:image', imageSrc);
+            
+            document.title = `${book.title} - El Rincón del Lector`;
+        },
+
+        resetMeta() {
+            const defaultUrl = window.location.origin + window.location.pathname;
+            const baseImageUrl = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}${BASE_PATH}`;
+            const defaultImage = `${baseImageUrl}/images/photo-1507842217343-583bb7270b66.jpg`;
+            
+            this.setMetaTag('og:title', 'El Rincón del Lector - Libros de Segunda Mano');
+            this.setMetaTag('og:description', 'Explora nuestra colección de tesoros literarios de segunda mano y encuentra tu próxima aventura.');
+            this.setMetaTag('og:url', defaultUrl);
+            this.setMetaTag('og:image', defaultImage);
+            this.setMetaTag('twitter:title', 'El Rincón del Lector');
+            this.setMetaTag('twitter:description', 'Libros de segunda mano con historias que merecen una segunda oportunidad');
+            this.setMetaTag('twitter:image', defaultImage);
+            
+            document.title = 'Librería El Rincón del Lector';
+        }
+    };
+
+    // --- 4. Funciones Puras de Renderizado ---
     function generatePriceHTML(book) {
         const hasDiscount = book.discountPrice && book.discountPrice < book.price;
         const priceFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -86,16 +127,15 @@
         const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         
-        // NUEVO: Agregamos el botón de compartir
-        return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><div class="book-detail__actions"><span class="status-badge ${statusClass}">${statusText}</span><button class="share-button" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Compartir</button></div></div></div>`;
+        return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><div class="book-detail__actions"><span class="status-badge ${statusClass}">${statusText}</span><div class="share-buttons"><button class="share-button share-button--copy" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Copiar Link</button><button class="share-button share-button--facebook" data-book-id="${book.id}" title="Compartir en Facebook">📘 Facebook</button></div></div></div></div>`;
     }
     
-    // --- 3. Punto de Entrada Principal de la Aplicación ---
+    // --- 5. Punto de Entrada Principal ---
     document.addEventListener('DOMContentLoaded', () => {
         async function main() {
             books = await fetchBooks();
 
-            // --- 3.1. Referencias al DOM ---
+            // Referencias al DOM
             const bookGrid = document.getElementById('book-grid');
             const bookListingView = document.getElementById('book-listing');
             const bookDetailView = document.getElementById('book-detail-view');
@@ -109,7 +149,7 @@
             const searchForm = document.getElementById('search-form');
             const clearSearchBtn = document.getElementById('clear-search-btn');
 
-            // Verificación de robustez
+            // Verificación
             if (!bookGrid || !bookListingView || !bookDetailView || !bookDetailContent || !backButton || !imageModal) {
                 console.error("Error de inicialización: Faltan elementos esenciales en el DOM.");
                 return;
@@ -136,11 +176,11 @@
                 } else {
                     bookGrid.innerHTML = `<p class="no-results-message">No se encontraron libros para tu búsqueda.</p>`;
                 }
-
-                isGridRendered = true; // Marcamos que el grid ya fue renderizado
+                
+                isGridRendered = true;
             }
 
-            // --- 3.2. Gestores (Managers) de Lógica ---
+            // Gestores de Lógica
             const modalManager = {
                 open: (imageSrc) => {
                     modalImage.src = imageSrc;
@@ -155,12 +195,12 @@
 
             const viewManager = {
                 showGridView: () => {
-                    // Si el grid está vacío, renderizarlo primero
                     if (!isGridRendered) {
                         renderGrid();
                     }
                     
-
+                    metaManager.resetMeta();
+                    
                     bookListingView.classList.remove('hidden');
                     bookDetailView.classList.add('hidden');
                     requestAnimationFrame(() => {
@@ -177,21 +217,20 @@
                     const book = books.find(b => b.id === bookId);
                     if (book) {
                         bookDetailContent.innerHTML = generateBookDetailHTML(book);
+                        metaManager.updateBookMeta(book);
                         bookListingView.classList.add('hidden');
                         bookDetailView.classList.remove('hidden');
                         window.scrollTo(0, 0);
                     } else {
-                        // Si el libro no existe, redirigir al home
                         router.navigateToHome();
                     }
                 }
             };
 
-            // --- NUEVO: Función para copiar el enlace al portapapeles ---
+            // Funciones de compartir
             function copyShareLink(bookId) {
                 const shareUrl = router.getShareableUrl(bookId);
                 
-                // Usamos la API del portapapeles moderna
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(shareUrl)
                         .then(() => {
@@ -202,12 +241,17 @@
                             fallbackCopyToClipboard(shareUrl);
                         });
                 } else {
-                    // Fallback para navegadores antiguos
                     fallbackCopyToClipboard(shareUrl);
                 }
             }
 
-            // Fallback para copiar en navegadores que no soportan la API moderna
+            function shareOnFacebook(bookId) {
+                const shareUrl = router.getShareableUrl(bookId);
+                const encodedUrl = encodeURIComponent(shareUrl);
+                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                window.open(facebookUrl, 'facebook-share', 'width=600,height=400');
+            }
+
             function fallbackCopyToClipboard(text) {
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
@@ -226,30 +270,26 @@
                 document.body.removeChild(textArea);
             }
 
-            // Función para mostrar notificaciones temporales
             function showNotification(message, isError = false) {
                 const notification = document.createElement('div');
                 notification.className = `notification ${isError ? 'notification--error' : 'notification--success'}`;
                 notification.textContent = message;
                 document.body.appendChild(notification);
                 
-                // Animación de entrada
                 setTimeout(() => notification.classList.add('visible'), 10);
                 
-                // Remover después de 3 segundos
                 setTimeout(() => {
                     notification.classList.remove('visible');
                     setTimeout(() => document.body.removeChild(notification), 300);
                 }, 3000);
             }
 
-            // --- 3.3. Asignación de Event Listeners ---
-            
-            // Navegación principal
+            // Event Listeners
             bookGrid.addEventListener('click', (event) => {
                 const card = event.target.closest('.book-card');
                 if (card && card.dataset.bookId) {
                     const bookId = parseInt(card.dataset.bookId, 10);
+                    console.log('📖 Click en libro ID:', bookId);
                     lastScrollPosition = window.scrollY;
                     lastSelectedBookId = bookId;
                     router.navigateToBook(bookId);
@@ -257,37 +297,39 @@
             });
 
             backButton.addEventListener('click', () => {
+                console.log('⬅️ Click en botón volver');
                 router.navigateToHome();
             });
 
-            // NUEVO: Event listener para el botón de compartir
             bookDetailContent.addEventListener('click', (event) => {
-                // Lógica del modal (existente)
                 if (event.target.classList.contains('book-detail__cover')) {
                     modalManager.open(event.target.src);
                 }
                 
-                // NUEVO: Lógica del botón compartir
-                if (event.target.classList.contains('share-button')) {
+                if (event.target.classList.contains('share-button--copy')) {
                     const bookId = parseInt(event.target.dataset.bookId, 10);
                     copyShareLink(bookId);
                 }
+                
+                if (event.target.classList.contains('share-button--facebook')) {
+                    const bookId = parseInt(event.target.dataset.bookId, 10);
+                    shareOnFacebook(bookId);
+                }
             });
 
-            // Lógica del modal
             modalCloseButton.addEventListener('click', modalManager.close);
             imageModal.addEventListener('click', (event) => {
                 if (event.target === imageModal) {
                     modalManager.close();
                 }
             });
+            
             window.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape' && imageModal.classList.contains('visible')) {
                     modalManager.close();
                 }
             });
             
-            // Búsqueda
             searchForm.addEventListener('submit', (e) => e.preventDefault());
 
             searchInput.addEventListener('input', (event) => {
@@ -308,9 +350,9 @@
                 searchInput.focus();
             });
 
-            // --- NUEVO: Event listener para cambios en el hash ---
             window.addEventListener('hashchange', () => {
                 const bookId = router.getBookIdFromHash();
+                console.log('🔄 Hash cambió. Libro ID:', bookId);
                 
                 if (bookId) {
                     viewManager.showDetailView(bookId);
@@ -319,19 +361,16 @@
                 }
             });
 
-            // --- NUEVO: Procesamiento inicial de la URL ---
+            // Procesamiento inicial
             const initialBookId = router.getBookIdFromHash();
             
             if (initialBookId) {
-                // Si hay un libro en la URL, mostrarlo directamente
                 viewManager.showDetailView(initialBookId);
             } else {
-                // Renderizado normal del grid
                 renderGrid();
             }
         }
         
-        // Ejecutamos la función principal de nuestra aplicación.
         main();
     });
 })();
