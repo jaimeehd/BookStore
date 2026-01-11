@@ -36,7 +36,7 @@
     }
 
     // --- 3. LÓGICA DEL FORMULARIO DE EDICIÓN Y CREACIÓN ---
-    function generateEditFormHTML(book = {}) {
+   function generateEditFormHTML(book = {}) {
         const isNew = !book.id;
         const bookId = isNew ? Date.now() : book.id;
 
@@ -78,6 +78,10 @@
                         <option value="Usado - Aceptable" ${book.condition === 'Usado - Aceptable' ? 'selected' : ''}>Usado - Aceptable</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="promoTag">Etiqueta Promocional</label>
+                    <input type="text" id="promoTag" name="promoTag" value="${book.promoTag || ''}">
+                </div>
             </div>
 
             <div class="form-group">
@@ -103,10 +107,74 @@
                     <label for="isbn">ISBN</label>
                     <input type="text" id="isbn" name="isbn" value="${book.isbn || 'S/I'}">
                 </div>
+                
+            </div>
+
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="promoTag">Etiqueta Promocional</label>
-                    <input type="text" id="promoTag" name="promoTag" value="${book.promoTag || ''}">
+                    <label for="publisher">Editorial</label>
+                    <input type="text" id="publisher" name="publisher" value="${book.publisher || 'Editorial Planeta'}">
                 </div>
+                <div class="form-group">
+                    <label for="pages">Número de Páginas</label>
+                    <input type="number" id="pages" name="pages" value="${book.pages || 0}" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="format">Formato</label>
+                    <select id="format" name="format">
+                        <option value="Tapa Blanda" ${book.format === 'Tapa Blanda' || !book.format ? 'selected' : ''}>Tapa Blanda</option>
+                        <option value="Tapa Dura" ${book.format === 'Tapa Dura' ? 'selected' : ''}>Tapa Dura</option>
+                        <option value="Bolsillo" ${book.format === 'Bolsillo' ? 'selected' : ''}>Bolsillo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="publicationYear">Año de Publicación</label>
+                    <input type="number" id="publicationYear" name="publicationYear" value="${book.publicationYear || 0}" min="0" max="${new Date().getFullYear()}" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="language">Idioma</label>
+                    <select id="language" name="language">
+                        <option value="Español" ${book.language === 'Español' || !book.language ? 'selected' : ''}>Español</option>
+                        <option value="Inglés" ${book.language === 'Inglés' ? 'selected' : ''}>Inglés</option>
+                        <option value="Francés" ${book.language === 'Francés' ? 'selected' : ''}>Francés</option>
+                        <option value="Alemán" ${book.language === 'Alemán' ? 'selected' : ''}>Alemán</option>
+                        <option value="Italiano" ${book.language === 'Italiano' ? 'selected' : ''}>Italiano</option>
+                        <option value="Portugués" ${book.language === 'Portugués' ? 'selected' : ''}>Portugués</option>
+                        <option value="Otro" ${book.language === 'Otro' ? 'selected' : ''}>Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="location">Ubicación</label>
+                    <input type="text" id="location" name="location" value="${book.location || 'Bogotá'}">
+                </div>
+                <div class="form-group">
+                    <label for="shippingClass">Clase de Envío</label>
+                    <select id="shippingClass" name="shippingClass">
+                        <option value="Estándar" ${book.shippingClass === 'Estándar' || !book.shippingClass ? 'selected' : ''}>Estándar</option>
+                        <option value="Express" ${book.shippingClass === 'Express' ? 'selected' : ''}>Express</option>
+                        <option value="Internacional" ${book.shippingClass === 'Internacional' ? 'selected' : ''}>Internacional</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="deliveryPreference">Preferencias de Entrega</label>
+                    <select id="deliveryPreference" name="deliveryPreference">
+                    <option value="Encuentro en un lugar público" ${book.deliveryPreference === 'Encuentro en un lugar público' || !book.deliveryPreference ? 'selected' : ''}>Encuentro en un lugar público</option>
+                    <option value="Retiro en la puerta" ${book.deliveryPreference === 'Retiro en la puerta' ? 'selected' : ''}>Retiro en la puerta</option>
+                    <option value="Entrega en la puerta" ${book.deliveryPreference === 'Entrega en la puerta' ? 'selected' : ''}>Entrega en la puerta</option>
+                </select>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="facebookUrl">URL de Facebook</label>
+                    <input type="url" id="facebookUrl" name="facebookUrl" value="${book.facebookUrl || ''}" placeholder="https://facebook.com/...">
+                </div>
+            <div class="form-group">
+                <label for="defects">Defectos</label>
+                <textarea id="defects" name="defects" rows="2">${book.defects || 'Ninguno'}</textarea>
             </div>
 
             <button type="submit" class="form-submit-btn">${isNew ? 'Añadir Libro' : 'Guardar Cambios'}</button>
@@ -234,12 +302,22 @@
                 condition: formData.get('condition'),
                 isbn: formData.get('isbn'),
                 collection: formData.get('collection'),
+                publisher: formData.get('publisher'),
+                pages: parseInt(formData.get('pages'), 10) || 0,
+                format: formData.get('format'),
+                publicationYear: parseInt(formData.get('publicationYear'), 10) || 0,
+                language: formData.get('language'),
+                defects: formData.get('defects'),
                 description: formData.get('description'),
                 price: parseFloat(formData.get('price')),
                 discountPrice: parseFloat(formData.get('discountPrice')) || null,
                 promoTag: formData.get('promoTag'),
                 status: formData.get('status'),
-                imageFile: formData.get('imageFile')
+                imageFile: formData.get('imageFile'),
+                facebookUrl: formData.get('facebookUrl'),
+                location: formData.get('location'),
+                shippingClass: formData.get('shippingClass'),
+                deliveryPreference: formData.get('deliveryPreference') 
             };
 
             if (isNew) {
