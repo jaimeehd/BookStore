@@ -4,7 +4,7 @@ const https = require('https');
 const CONFIG = {
     githubUser: 'jaimeehd',
     repoName: 'bookstore',
-    totalBooks: 15  // Ajusta según cuántos libros tengas
+    totalBooks: 57  // Ajusta según cuántos libros tengas
 };
 
 const BASE_URL = `https://${CONFIG.githubUser}.github.io/${CONFIG.repoName}`;
