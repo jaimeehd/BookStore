@@ -3,7 +3,7 @@
 /* ===================================================================== */
 
 .admin-header {
-    background: linear-gradient(rgba(45, 53, 80, 0.7), rgba(45, 53, 80, 0.7)), url('../../images/photo-1507842217343-583bb7270b66.jpg') no-repeat center center/cover;
+    background: linear-gradient(rgba(45, 53, 80, 0.7), rgba(45, 53, 80, 0.7)), url('../images/photo-1507842217343-583bb7270b66.jpg') no-repeat center center/cover;
 }
 .section-title { font-family: var(--font-primary); text-align: center; font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--primary-color); }
 /* --- Estilos del Buscador --- */
