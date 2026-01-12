@@ -207,6 +207,14 @@
                 if (modalContent) {
                     modalContent.scrollTop = 0;
                 }
+                
+                // Agregar event listeners para seleccionar contenido al hacer foco
+                const formInputs = editForm.querySelectorAll('input[type="text"], input[type="number"], input[type="url"], textarea');
+                formInputs.forEach(input => {
+                    input.addEventListener('focus', function() {
+                        this.select();
+                    });
+                });
             },
             close: () => {
                 editModal.classList.remove('visible');
