@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 
 // Configuración - Solo esto se modifica según el proyecto
@@ -51,12 +51,47 @@ function getImageUrl(book) {
         : `${IMAGES_URL}/placeholder.jpg`;
 }
 
-// Plantilla HTML
+// Generar HTML para defectos (solo si existen)
+function generateDefectsHTML(book) {
+    if (!book.defects || book.defects.trim() === '' || book.defects.toLowerCase() === 'ninguno') {
+        return '';
+    }
+    
+    return `
+        <div class="book-defects">
+            <strong>⚠️ Defectos:</strong>
+            <p>${book.defects}</p>
+        </div>`;
+}
+
+// Generar HTML para precios (con descuento si aplica)
+function generatePriceHTML(book) {
+    const hasDiscount = book.discountPrice && book.discountPrice < book.price;
+    
+    if (hasDiscount) {
+        return `
+            <div class="price-container">
+                <span class="price-original">${formatPrice(book.price)}</span>
+                <span class="price-current">${formatPrice(book.discountPrice)}</span>
+                ${book.promoTag ? `<span class="promo-tag">${book.promoTag}</span>` : ''}
+            </div>`;
+    }
+    
+    return `
+        <div class="price-container">
+            <span class="price-current">${formatPrice(book.price)}</span>
+            ${book.promoTag ? `<span class="promo-tag">${book.promoTag}</span>` : ''}
+        </div>`;
+}
+
+// Plantilla HTML mejorada
 function generateBookPage(book) {
     const description = generateDescription(book);
     const imageUrl = getImageUrl(book);
     const pageUrl = `${BASE_URL}/libro-${book.id}.html`;
     const redirectUrl = `${BASE_URL}/index.html#libro/${book.id}`;
+    const defectsHTML = generateDefectsHTML(book);
+    const priceHTML = generatePriceHTML(book);
     
     return `<!DOCTYPE html>
 <html lang="es">
@@ -94,37 +129,47 @@ function generateBookPage(book) {
             --secondary-color: #D7CCC8;
             --background-color: #F5F5F5;
             --accent-color: #8D6E63;
+            --warning-bg: #fff3cd;
+            --warning-border: #ff9800;
+            --warning-text: #856404;
+            --promo-color: #FF8F00;
             --font-primary: 'Merriweather', serif;
             --font-secondary: 'Roboto', sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         body {
             font-family: var(--font-secondary);
             background-color: var(--background-color);
+            color: #3E2723;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            line-height: 1.3;
         }
         
         .header {
             background-color: var(--primary-color);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.87rem 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .header h1 {
             font-family: var(--font-primary);
-            font-size: 1.8rem;
+            font-size: 1.25rem;
             margin: 0;
         }
         
         .container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
+            max-width: 1000px;
+            margin: 1rem auto;
+            padding: 1rem;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -133,13 +178,13 @@ function generateBookPage(book) {
         .book-info {
             display: flex;
             gap: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            align-items: flex-start;
         }
         
         .book-cover {
             flex-shrink: 0;
             width: 250px;
-            max-height: 375px;
         }
         
         .book-cover img {
@@ -149,51 +194,117 @@ function generateBookPage(book) {
             object-fit: contain;
             border-radius: 5px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: var(--background-color);
         }
         
         .book-details {
             flex-grow: 1;
+            min-width: 0;
         }
         
         .book-title {
             font-family: var(--font-primary);
-            font-size: 2rem;
+            font-size: 1.3rem;
             color: var(--primary-color);
             margin: 0 0 0.5rem 0;
+            line-height: 1.3;
         }
         
         .book-author {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #666;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
         
         .book-meta {
             list-style: none;
             padding: 0;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem 1rem;
         }
         
         .book-meta li {
             padding: 0.3rem 0;
             color: #444;
+            font-size: 0.95rem;
+        }
+        
+        .book-meta strong {
+            color: var(--primary-color);
+        }
+        
+        .book-defects {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-radius: 4px;
+        }
+        
+        .book-defects strong {
+            color: var(--warning-text);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-defects p {
+            margin: 0;
+            color: var(--warning-text);
         }
         
         .book-description {
-            line-height: 1.6;
+            line-height: 1.25;
             color: #333;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .price-section {
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .price-original {
+            font-size: 1rem;
+            color: #888;
+            text-decoration: line-through;
+        }
+        
+        .price-current {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .promo-tag {
+            background-color: var(--promo-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
         }
         
         .cta-button {
             display: inline-block;
             background-color: var(--accent-color);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.7rem 2rem;
             border-radius: 5px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
@@ -209,7 +320,7 @@ function generateBookPage(book) {
             background-color: #3E2723;
             color: var(--secondary-color);
             text-align: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
         
         @media (max-width: 768px) {
@@ -222,9 +333,26 @@ function generateBookPage(book) {
                 width: 200px;
             }
             
+            .book-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .book-title {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+            
+            .book-author {
+                text-align: center;
+            }
+            
             .container {
                 margin: 1rem;
                 padding: 1.5rem;
+            }
+            
+            .price-current {
+                font-size: 1.6rem;
             }
         }
     </style>
@@ -243,22 +371,34 @@ function generateBookPage(book) {
                 <h2 class="book-title">${book.title}</h2>
                 <p class="book-author">por ${book.author}</p>
                 <ul class="book-meta">
+                    <li><strong>ISBN:</strong> ${book.isbn}</li>
+                    <li><strong>Colección:</strong> ${book.collection}</li>
                     <li><strong>Género:</strong> ${book.genre}</li>
+                    <li><strong>Editorial:</strong> ${book.publisher}</li>
+                    <li><strong>Formato:</strong> ${book.format}</li>
+                    ${book.pages > 0 ? `<li><strong>Páginas:</strong> ${book.pages}</li>` : ''}
                     <li><strong>Estado:</strong> ${book.condition}</li>
-                    <li><strong>Precio:</strong> ${formatPrice(book.price)}</li>
+                    <li><strong>Ubicación:</strong> ${book.location}</li>
+                    <li><strong>Entrega:</strong> ${book.deliveryPreference}</li>
                 </ul>
             </div>
         </div>
         
+        ${defectsHTML}
+        
         <div class="book-description">
             <p>${book.description}</p>
+        </div>
+        
+        <div class="price-section">
+            ${priceHTML}
         </div>
         
         <a href="${redirectUrl}" class="cta-button">Ver en la tienda completa →</a>
     </main>
     
     <footer class="footer">
-        <p>&copy; 2023 ${CONFIG.siteName}. Todos los derechos reservados.</p>
+        <p>&copy; 2025 ${CONFIG.siteName}. Todos los derechos reservados.</p>
     </footer>
 </body>
 </html>`;
@@ -270,7 +410,7 @@ function generatePages() {
     let successCount = 0;
     let errorCount = 0;
     
-    console.log('\n🚀 Generando páginas HTML...\n');
+    console.log('\n🚀 Generando páginas HTML mejoradas...\n');
     console.log(`📦 Total de libros: ${books.length}`);
     console.log(`🌐 URL base: ${BASE_URL}\n`);
     
@@ -306,7 +446,8 @@ function generatePages() {
     console.log('   1. git add libro-*.html');
     console.log('   2. git commit -m "Actualizar páginas de libros"');
     console.log('   3. git push origin main');
-    console.log('   4. Probar en Facebook Debugger\n');
+    console.log('   4. Probar en Facebook Debugger');
+    console.log('   5. https://developers.facebook.com/tools/debug/\n');
 }
 
 // Ejecutar

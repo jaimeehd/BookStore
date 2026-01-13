@@ -34,21 +34,21 @@ body {
 .book-page-header {
     background-color: var(--primary-color);
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.87rem 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .book-page-header h1 {
     font-family: var(--font-primary);
-    font-size: 1.8rem;
+    font-size: 1.25rem;
     margin: 0;
 }
 
 /* Container principal */
 .book-page-container {
     max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
+    margin: 1.5rem auto;
+    padding: 1.2rem;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -58,7 +58,7 @@ body {
 .book-page-info {
     display: flex;
     gap: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     align-items: flex-start;
 }
 

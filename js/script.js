@@ -121,13 +121,62 @@
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
         return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div></div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
     }
-    
+    /* 
     function generateBookDetailHTML(book) {
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         
         return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><div class="book-detail__actions"><span class="status-badge ${statusClass}">${statusText}</span><div class="share-buttons"><button class="share-button share-button--copy" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Copiar Link</button><button class="share-button share-button--facebook" data-book-id="${book.id}" title="Compartir en Facebook">📘 Facebook</button></div></div></div></div>`;
+    } */
+    function generateBookDetailHTML(book) {
+        const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
+        const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
+        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
+        
+        // Generar HTML para defectos solo si existen y no son "Ninguno"
+        const defectsHTML = (book.defects && book.defects.trim() !== '' && book.defects.toLowerCase() !== 'ninguno') 
+            ? `<div class="book-detail__defects"><strong>⚠️ Defectos:</strong><p>${book.defects}</p></div>` 
+            : '';
+        
+        // Generar botón de Facebook solo si existe URL
+        const facebookButtonHTML = (book.facebookUrl && book.facebookUrl.trim() !== '') 
+            ? `<a href="${book.facebookUrl}" target="_blank" rel="noopener noreferrer" class="share-button share-button--facebook-link" title="Ver en Facebook Marketplace">📘 Ver en Facebook</a>` 
+            : '';
+        
+         return `
+            <img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover">
+            <div class="book-detail__info">
+                <h2 class="book-detail__title">${book.title}</h2>
+                <h3 class="book-detail__author">por ${book.author}</h3>
+                
+                <ul class="book-detail__meta-list">
+                    <li><strong>ISBN:</strong> ${book.isbn}</li>
+                    <li><strong>Colección:</strong> ${book.collection}</li>
+                    <li><strong>Género:</strong> ${book.genre}</li>
+                    <li><strong>Editorial:</strong> ${book.publisher}</li>
+                    <li><strong>Formato:</strong> ${book.format}</li>
+                    ${book.pages > 0 ? `<li><strong>Páginas:</strong> ${book.pages}</li>` : ''}
+                    <li><strong>Estado:</strong> ${book.condition}</li>
+                    <li><strong>Ubicación:</strong> ${book.location}</li>
+                    <li title="${book.deliveryPreference}"><strong>Preferencia de entrega:</strong> ${book.deliveryPreference}</li>
+                </ul>
+                
+                ${defectsHTML}
+                
+                <p class="book-detail__description">${book.description}</p>
+                
+                <div class="book-detail__footer">
+                    <div class="book-detail__price">${generatePriceHTML(book)}</div>
+                    <div class="book-detail__actions">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <div class="share-buttons">
+                            <button class="share-button share-button--copy" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Copiar Link</button>
+                            ${facebookButtonHTML}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
     }
     
     // --- 5. Punto de Entrada Principal ---
