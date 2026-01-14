@@ -594,6 +594,7 @@ main {
     .book-detail__footer {
         flex-direction: column;
         gap: 1rem;
+        width: 100%;
     }
     
     .book-detail-view {
@@ -610,18 +611,23 @@ main {
     .book-detail__actions {
         flex-direction: column;
         width: 100%;
+        align-items: stretch;
     }
     
     .share-buttons {
         width: 100%;
+        flex-direction: column;
     }
     
-    .share-button {
+   .share-button,
+    .share-button--facebook-link {
         width: 100%;
         flex: 1;
-        min-width: 140px;
+        min-width: auto;
         justify-content: center;
+        display: flex;
     }
+      
 }
 
 @media (max-width: 480px) {
