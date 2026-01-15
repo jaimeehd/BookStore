@@ -226,6 +226,15 @@
         return `<div class="price-container">${hasDiscount ? `<span class="price-original">${originalPrice}</span><span class="price-current">${currentPrice}</span>` : `<span class="price-current">${currentPrice}</span>`}${book.promoTag ? `<span class="promo-tag">${book.promoTag}</span>` : ''}</div>`;
     }
     
+    // Traducción simple de status a etiqueta en inglés (igual que admin.js)
+    function getStatusLabel(status) {
+        if (!status) return '';
+        const s = status.toLowerCase();
+        if (s === 'available' || s === 'disponible') return 'available';
+        if (s === 'sold' || s === 'agotado' || s === 'vendido') return 'sold';
+        return status;
+    }
+
     function generateBookCardHTML(book) {
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
@@ -324,12 +333,14 @@
             
             function renderGrid(searchTerm = '') {
                 const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
-                
+                const statusLabel = getStatusLabel(lowerCaseSearchTerm);
                 const filteredBooks = books.filter(book => {
                     return (
                         book.title.toLowerCase().includes(lowerCaseSearchTerm) ||
                         book.author.toLowerCase().includes(lowerCaseSearchTerm) ||
-                        book.genre.toLowerCase().includes(lowerCaseSearchTerm)
+                        book.genre.toLowerCase().includes(lowerCaseSearchTerm) ||
+                        (book.collection && book.collection.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                        (book.status && book.status.toLowerCase().includes(statusLabel))
                     );
                 });
 
