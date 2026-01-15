@@ -2,6 +2,9 @@
   {
     "id": 1,
     "title": "Veinte Mil Leguas de Viaje Submarino",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Julio Verne",
     "genre": "Aventura, Ciencia Ficción",
     "condition": "Usado - Buen estado",
@@ -27,6 +30,9 @@
   {
     "id": 2,
     "title": "La Isla del Tesoro",
+  	"seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Robert L. Stevenson",
     "genre": "Aventura, Piratas",
     "condition": "Usado - Buen estado",
@@ -52,6 +58,9 @@
   {
     "id": 3,
     "title": "Los Tres Mosqueteros",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Alejandro Dumas",
     "genre": "Aventura, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -77,6 +86,9 @@
   {
     "id": 4,
     "title": "Miguel Strogoff",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Julio Verne",
     "genre": "Aventura, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -102,6 +114,9 @@
   {
     "id": 5,
     "title": "Desde Rusia con Amor",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Ian Fleming",
     "genre": "Espionaje, Thriller",
     "condition": "Usado - Como nuevo",
@@ -127,6 +142,9 @@
   {
     "id": 6,
     "title": "Lord Jim",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Joseph Conrad",
     "genre": "Aventura, Novela Psicológica",
     "condition": "Usado - Buen estado",
@@ -152,6 +170,9 @@
   {
     "id": 7,
     "title": "Las Minas del Rey Salomón",
+    "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "H. Rider Haggard",
     "genre": "Aventura",
     "condition": "Usado - Buen estado",
@@ -177,6 +198,9 @@
   {
     "id": 8,
     "title": "Príncipe y Mendigo",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Mark Twain",
     "genre": "Novela Histórica, Sátira Social",
     "condition": "Usado - Buen estado",
@@ -202,6 +226,9 @@
   {
     "id": 9,
     "title": "El Regreso de Sherlock Holmes",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "A. Conan Doyle",
     "genre": "Misterio, Detectives",
     "condition": "Usado - Buen estado",
@@ -227,6 +254,9 @@
   {
     "id": 10,
     "title": "El Conde de Montecristo I",
+	  "seriesId": "conde-montecristo",
+	  "volumeNumber": 1,
+	  "totalVolumes": 0,
     "author": "Alejandro Dumas",
     "genre": "Aventura, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -252,6 +282,9 @@
   {
     "id": 11,
     "title": "El Conde de Montecristo II",
+	"seriesId": "conde-montecristo",
+	"volumeNumber": 0,
+	"totalVolumes": 0,
     "author": "Alejandro Dumas",
     "genre": "Aventura, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -277,6 +310,9 @@
   {
     "id": 12,
     "title": "Viaje al Centro de la Tierra",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Julio Verne",
     "genre": "Aventura, Ciencia Ficción",
     "condition": "Usado - Buen estado",
@@ -302,6 +338,9 @@
   {
     "id": 13,
     "title": "El Corsario Negro",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Emilio Salgari",
     "genre": "Aventura, Piratas",
     "condition": "Usado - Buen estado",
@@ -327,6 +366,9 @@
   {
     "id": 14,
     "title": "Tarzán de los Monos",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "E. Rice Burroughs",
     "genre": "Aventura",
     "condition": "Usado - Buen estado",
@@ -352,6 +394,9 @@
   {
     "id": 15,
     "title": "El Último de los Mohicanos",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Fenimore Cooper",
     "genre": "Aventura, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -377,6 +422,9 @@
   {
     "id": 16,
     "title": "La Llamada de la Selva",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Jack London",
     "genre": "Aventura",
     "condition": "Usado - Buen estado",
@@ -402,6 +450,9 @@
   {
     "id": 17,
     "title": "El Jorobado de Nuestra Señora",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Victor Hugo",
     "genre": "Novela Gótica, Drama Histórico",
     "condition": "Usado - Buen estado",
@@ -427,6 +478,9 @@
   {
     "id": 18,
     "title": "Los Hijos del Capitán Grant",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Julio Verne",
     "genre": "Aventura, Geografía",
     "condition": "Usado - Buen estado",
@@ -452,6 +506,9 @@
   {
     "id": 19,
     "title": "Sandokán I",
+	  "seriesId": "sandokan",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Emilio Salgari",
     "genre": "Aventura, Piratas",
     "condition": "Usado - Buen estado",
@@ -477,6 +534,9 @@
   {
     "id": 20,
     "title": "Sandokán II",
+	  "seriesId": "sandokan",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Emilio Salgari",
     "genre": "Aventura, Piratas",
     "condition": "Usado - Buen estado",
@@ -502,6 +562,9 @@
   {
     "id": 21,
     "title": "Ivanhoe",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Walter Scott",
     "genre": "Novela Histórica, Romance Caballeresco",
     "condition": "Usado - Buen estado",
@@ -527,6 +590,9 @@
   {
     "id": 22,
     "title": "De la Tierra a la Luna",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Julio Verne",
     "genre": "Ciencia Ficción, Aventura",
     "condition": "Usado - Buen estado",
@@ -552,6 +618,9 @@
   {
     "id": 23,
     "title": "La Cabaña del Tío Tom",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "H. Beecher Stowe",
     "genre": "Novela Social, Drama",
     "condition": "Usado - Buen estado",
@@ -577,6 +646,9 @@
   {
     "id": 24,
     "title": "Taras Bulba",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Nikolai Gógol",
     "genre": "Novela Histórica, Épica",
     "condition": "Usado - Buen estado",
@@ -602,6 +674,9 @@
   {
     "id": 25,
     "title": "Goldfinger",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Ian Fleming",
     "genre": "Espionaje, Thriller",
     "condition": "Usado - Buen estado",
@@ -627,6 +702,9 @@
   {
     "id": 26,
     "title": "De Aquí a la Eternidad",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "James Jones",
     "genre": "Bélico, Drama",
     "condition": "Usado - Buen estado",
@@ -652,6 +730,9 @@
   {
     "id": 27,
     "title": "Siddhartha",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Herman Hesse",
     "genre": "Ficción Filosófica, Espiritual",
     "condition": "Usado - Buen estado",
@@ -677,6 +758,9 @@
   {
     "id": 28,
     "title": "En Busca del Arca Perdida",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Campbell Black",
     "genre": "Aventura, Acción",
     "condition": "Usado - Buen estado",
@@ -702,6 +786,9 @@
   {
     "id": 29,
     "title": "A Sangre Fría",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Truman Capote",
     "genre": "Novela de no ficción, True Crime",
     "condition": "Usado - Buen estado",
@@ -727,6 +814,9 @@
   {
     "id": 30,
     "title": "El Valle de las Muñecas",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Jacqueline Susann",
     "genre": "Drama, Ficción",
     "condition": "Usado - Buen estado",
@@ -752,6 +842,9 @@
   {
     "id": 31,
     "title": "Ven, Amada Mía",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Pearl S. Buck",
     "genre": "Drama, Romance",
     "condition": "Usado - Buen estado",
@@ -777,6 +870,9 @@
   {
     "id": 32,
     "title": "Drácula",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Bram Stoker",
     "genre": "Novela Gótica, Terror",
     "condition": "Usado - Como nuevo",
@@ -802,6 +898,9 @@
   {
     "id": 33,
     "title": "King Kong",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Delos W. Lovelace",
     "genre": "Aventura, Fantasía",
     "condition": "Usado - Buen estado",
@@ -827,6 +926,9 @@
   {
     "id": 34,
     "title": "El Bebé de Rosemary",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Ira Levin",
     "genre": "Terror, Thriller Psicológico",
     "condition": "Usado - Como nuevo",
@@ -852,6 +954,9 @@
   {
     "id": 35,
     "title": "Sin Novedad en el Frente",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Erich Maria Remarque",
     "genre": "Bélico, Drama",
     "condition": "Usado - Como nuevo",
@@ -877,6 +982,9 @@
   {
     "id": 36,
     "title": "Historias para leer a plena luz",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Alfred Hitchcock",
     "genre": "Misterio, Suspense",
     "condition": "Usado - Buen estado",
@@ -902,6 +1010,9 @@
   {
     "id": 37,
     "title": "Trópico de Cáncer",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Henry Miller",
     "genre": "Novela, Ficción Autobiográfica",
     "condition": "Usado - Buen estado",
@@ -927,6 +1038,9 @@
   {
     "id": 38,
     "title": "Lo que el viento se llevó I",
+	  "seriesId": "loQueElVientoSeLlevo",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Margaret Mitchell",
     "genre": "Novela Histórica, Romance",
     "condition": "Usado - Buen estado",
@@ -952,6 +1066,9 @@
   {
     "id": 39,
     "title": "Lo que el viento se llevó II",
+	  "seriesId": "loQueElVientoSeLlevo",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Margaret Mitchell",
     "genre": "Novela Histórica, Romance",
     "condition": "Usado - Buen estado",
@@ -977,6 +1094,9 @@
   {
     "id": 40,
     "title": "Fundación",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Isaac Asimov",
     "genre": "Ciencia Ficción",
     "condition": "Usado - Buen estado",
@@ -1002,6 +1122,9 @@
   {
     "id": 41,
     "title": "El Imperio Contraataca",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Donald F. Glut",
     "genre": "Ciencia Ficción, Aventura Espacial",
     "condition": "Usado - Buen estado",
@@ -1027,6 +1150,9 @@
   {
     "id": 42,
     "title": "Colmillo Blanco",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Jack London",
     "genre": "Aventura",
     "condition": "Usado - Buen estado",
@@ -1052,6 +1178,9 @@
   {
     "id": 43,
     "title": "Los Piratas de la Malasia",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Emilio Salgari",
     "genre": "Aventura, Piratas",
     "condition": "Usado - Como nuevo",
@@ -1077,6 +1206,9 @@
   {
     "id": 44,
     "title": "El Angel sin Cabeza",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Vicki Baum",
     "genre": "Drama, Novela Histórica",
     "condition": "Usado - Buen estado",
@@ -1102,6 +1234,9 @@
   {
     "id": 45,
     "title": "El Americano Impasible",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Graham Greene",
     "genre": "Thriller Político, Ficción",
     "condition": "Usado - Buen estado",
@@ -1127,6 +1262,9 @@
   {
     "id": 46,
     "title": "Tai-Pan I",
+	  "seriesId": "tai-pan",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "James Clavell",
     "genre": "Novela Histórica, Aventura",
     "condition": "Usado - Buen estado",
@@ -1152,6 +1290,9 @@
   {
     "id": 47,
     "title": "Tai-Pan II",
+	  "seriesId": "tai-pan",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "James Clavell",
     "genre": "Novela Histórica, Aventura",
     "condition": "Usado - Buen estado",
@@ -1177,6 +1318,9 @@
   {
     "id": 48,
     "title": "Las Diabólicas",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Jules Barbey d'Aurevilly",
     "genre": "Cuentos, Misterio, Gótico",
     "condition": "Usado - Buen estado",
@@ -1202,6 +1346,9 @@
   {
     "id": 49,
     "title": "El Largo Adiós",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Raymond Chandler",
     "genre": "Novela Negra, Detectives",
     "condition": "Usado - Buen estado",
@@ -1227,6 +1374,9 @@
   {
     "id": 50,
     "title": "La Amenaza de Andrómeda",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Michael Crichton",
     "genre": "Ciencia Ficción, Thriller Tecnológico",
     "condition": "Usado - Buen estado",
@@ -1252,6 +1402,9 @@
   {
     "id": 51,
     "title": "Desayuno en Tiffany's",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Truman Capote",
     "genre": "Ficción, Novela Corta",
     "condition": "Usado - Buen estado",
@@ -1277,6 +1430,9 @@
   {
     "id": 52,
     "title": "El Retrato de Dorian Gray",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Oscar Wilde",
     "genre": "Novela Gótica, Ficción Filosófica",
     "condition": "Usado - Buen estado",
@@ -1302,6 +1458,9 @@
   {
     "id": 53,
     "title": "Segunda Fundación",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Isaac Asimov",
     "genre": "Ciencia Ficción",
     "condition": "Usado - Buen estado",
@@ -1327,6 +1486,9 @@
   {
     "id": 54,
     "title": "Don Camilo",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Giovanni Guareschi",
     "genre": "Humor, Sátira",
     "condition": "Usado - Buen estado",
@@ -1352,6 +1514,9 @@
   {
     "id": 55,
     "title": "El Viejo y el Mar",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Ernest Hemingway",
     "genre": "Ficción, Novela Corta",
     "condition": "Usado - Aceptable",
@@ -1377,6 +1542,9 @@
   {
     "id": 1767827403867,
     "title": "La muerte en Venecia",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Thomas Mann",
     "genre": "Líteratura Contemporanea",
     "condition": "Usado - Buen estado",
@@ -1402,6 +1570,9 @@
   {
     "id": 1767828112556,
     "title": "La peste",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Albert Camus",
     "genre": "Líteratura Contemporanea",
     "condition": "Usado - Buen estado",
@@ -1427,6 +1598,9 @@
   {
     "id": 1767828323216,
     "title": "La guerra del fin del mundo",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Mario Vargas Llosa",
     "genre": "Líteratura Contemporanea",
     "condition": "Usado - Buen estado",
@@ -1452,6 +1626,9 @@
   {
     "id": 1767828570488,
     "title": "Memorias de Adriano",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Marguerite Yourcenar",
     "genre": "Líteratura Contemporanea",
     "condition": "Usado - Buen estado",
@@ -1477,6 +1654,9 @@
   {
     "id": 1767828830445,
     "title": "Santuario",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "William Faulkner",
     "genre": "Líteratura Contemporanea",
     "condition": "Usado - Buen estado",
@@ -1502,6 +1682,9 @@
   {
     "id": 1767829108859,
     "title": "La venganza de Nofret",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Agatha Christie",
     "genre": "Novela",
     "condition": "Usado - Buen estado",
@@ -1527,6 +1710,9 @@
   {
     "id": 1767829506164,
     "title": "Niebla",
+	  "seriesId": "",
+	  "volumeNumber": 0,
+	  "totalVolumes": 0,
     "author": "Miguel de Unamuno",
     "genre": "Novela",
     "condition": "Usado - Aceptable",

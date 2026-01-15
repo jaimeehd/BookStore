@@ -8,7 +8,7 @@
     let books = []; 
     let lastScrollPosition = 0;
     let lastSelectedBookId = null;
-    let isGridRendered = false; // Flag para saber si el grid ya fue renderizado
+    let isGridRendered = false;
 
     // Función asíncrona para cargar los libros desde el archivo JSON.
     async function fetchBooks() {
@@ -106,7 +106,118 @@
         }
     };
 
-    // --- 4. Funciones Puras de Renderizado ---
+    // --- 4. Funciones para manejo de series ---
+    function getRelatedBooks(book) {
+        if (!book.seriesId) return [];
+        
+        return books.filter(b => 
+            b.seriesId === book.seriesId && b.id !== book.id
+        ).sort((a, b) => (a.volumeNumber || 0) - (b.volumeNumber || 0));
+    }
+
+    function getTotalVolumesForSeries(book, relatedBooks) {
+        // Recopilar todos los valores de totalVolumes de la serie
+        const allBooks = [book, ...relatedBooks];
+        const totalVolumeValues = allBooks
+            .map(b => b.totalVolumes)
+            .filter(val => val && val > 0);
+        
+        if (totalVolumeValues.length === 0) {
+            // Si nadie tiene totalVolumes, usar el conteo real
+            return allBooks.length;
+        }
+        
+        // Usar el valor máximo encontrado (asumiendo que el correcto es el mayor)
+        const maxTotalVolumes = Math.max(...totalVolumeValues);
+        
+        // Validar que el máximo tenga sentido (no puede ser menor que los libros que existen)
+        return Math.max(maxTotalVolumes, allBooks.length);
+    }
+
+    function generateSeriesWarningHTML(book, relatedBooks) {
+        if (!book.seriesId || relatedBooks.length === 0) return '';
+        
+        // Calcular el total real de volúmenes con lógica robusta
+        const totalVolumes = getTotalVolumesForSeries(book, relatedBooks);
+        
+        // Contar solo los volúmenes disponibles (incluyendo el actual)
+        const currentAvailable = book.status === 'available' ? 1 : 0;
+        const relatedAvailable = relatedBooks.filter(b => b.status === 'available').length;
+        const availableVolumes = currentAvailable + relatedAvailable;
+        
+        // Contar cuántos volúmenes existen realmente en la base de datos
+        const existingVolumes = relatedBooks.length + 1;
+        
+        // Verificar si todos los volúmenes están disponibles
+        const allAvailable = availableVolumes === totalVolumes;
+        
+        // Detectar si faltan volúmenes por registrar en la BD
+        const missingFromDatabase = existingVolumes < totalVolumes;
+        
+        let warningMessage = '';
+        if (missingFromDatabase) {
+            // Faltan volúmenes por completo (no están en la BD)
+            warningMessage = `<span class="series-warning__alert">⚠️ Solo ${existingVolumes} de ${totalVolumes} volúmenes registrados. ${availableVolumes} disponibles para la venta</span>`;
+        } else if (!allAvailable) {
+            // Todos los volúmenes están en la BD pero algunos están vendidos
+            warningMessage = `<span class="series-warning__alert">⚠️ Solo ${availableVolumes} de ${totalVolumes} volúmenes disponibles</span>`;
+        } else {
+            // Todo está completo y disponible
+            warningMessage = '<span class="series-warning__success">✅ Todos los volúmenes están disponibles</span>';
+        }
+        
+        return `
+            <div class="series-warning">
+                <div class="series-warning__header">
+                    <span class="series-warning__icon">📚</span>
+                    <strong>Obra en ${totalVolumes} volúmenes</strong>
+                </div>
+                <p class="series-warning__message">
+                    Esta obra requiere <strong>${totalVolumes} libro${totalVolumes > 1 ? 's' : ''}</strong> para estar completa.
+                    ${warningMessage}
+                </p>
+            </div>`;
+    }
+
+    function generateRelatedBooksHTML(relatedBooks) {
+        if (relatedBooks.length === 0) return '';
+        
+        const booksHTML = relatedBooks.map(b => {
+            const statusClass = b.status === 'available' ? 'available' : 'sold-out';
+            const statusText = b.status === 'available' ? 'Disponible' : 'Agotado';
+            const priceFormatter = new Intl.NumberFormat('es-CO', { 
+                style: 'currency', 
+                currency: 'COP', 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0 
+            });
+            const price = b.discountPrice && b.discountPrice < b.price 
+                ? priceFormatter.format(b.discountPrice) 
+                : priceFormatter.format(b.price);
+            
+            return `
+                <div class="related-book ${statusClass}" data-book-id="${b.id}">
+                    <img src="${b.imageFile ? `${BASE_PATH}/images/${b.imageFile}` : PLACEHOLDER_IMAGE}" 
+                         alt="${b.title}" 
+                         class="related-book__image">
+                    <div class="related-book__info">
+                        <h4 class="related-book__title">${b.title}</h4>
+                        <p class="related-book__price">${price}</p>
+                        <span class="related-book__status">${statusText}</span>
+                    </div>
+                </div>`;
+        }).join('');
+        
+        return `
+            <div class="related-books">
+                <h3 class="related-books__title">Otros volúmenes de esta obra:</h3>
+                <div class="related-books__grid">
+                    ${booksHTML}
+                </div>
+            </div>`;
+    }
+
+    // --- 5. Funciones Puras de Renderizado ---
     function generatePriceHTML(book) {
         const hasDiscount = book.discountPrice && book.discountPrice < book.price;
         const priceFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -119,36 +230,38 @@
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
-        return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div></div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
+        
+        // Badge de serie si aplica
+        const seriesBadge = book.seriesId ? `<span class="series-badge">📚 Serie</span>` : '';
+        
+        return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div>${seriesBadge}</div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
     }
-    /* 
+    
     function generateBookDetailHTML(book) {
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
         const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         
-        return `<img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover"><div class="book-detail__info"><h2 class="book-detail__title">${book.title}</h2><h3 class="book-detail__author">por ${book.author}</h3><ul class="book-detail__meta-list"><li><strong>ISBN:</strong> ${book.isbn}</li><li><strong>Colección:</strong> ${book.collection}</li><li><strong>Género:</strong> ${book.genre}</li><li><strong>Estado:</strong> ${book.condition}</li></ul><p class="book-detail__description">${book.description}</p><div class="book-detail__footer"><div class="book-detail__price">${generatePriceHTML(book)}</div><div class="book-detail__actions"><span class="status-badge ${statusClass}">${statusText}</span><div class="share-buttons"><button class="share-button share-button--copy" data-book-id="${book.id}" title="Copiar enlace para compartir">📋 Copiar Link</button><button class="share-button share-button--facebook" data-book-id="${book.id}" title="Compartir en Facebook">📘 Facebook</button></div></div></div></div>`;
-    } */
-    function generateBookDetailHTML(book) {
-        const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
-        const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
-        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
-        
-        // Generar HTML para defectos solo si existen y no son "Ninguno"
         const defectsHTML = (book.defects && book.defects.trim() !== '' && book.defects.toLowerCase() !== 'ninguno') 
             ? `<div class="book-detail__defects"><strong>⚠️ Defectos:</strong><p>${book.defects}</p></div>` 
             : '';
         
-        // Generar botón de Facebook solo si existe URL
         const facebookButtonHTML = (book.facebookUrl && book.facebookUrl.trim() !== '') 
             ? `<a href="${book.facebookUrl}" target="_blank" rel="noopener noreferrer" class="share-button share-button--facebook-link" title="Ver en Facebook Marketplace">📘 Ver en Facebook</a>` 
             : '';
+        
+        // Obtener libros relacionados de la serie
+        const relatedBooks = getRelatedBooks(book);
+        const seriesWarningHTML = generateSeriesWarningHTML(book, relatedBooks);
+        const relatedBooksHTML = generateRelatedBooksHTML(relatedBooks);
         
          return `
             <img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover">
             <div class="book-detail__info">
                 <h2 class="book-detail__title">${book.title}</h2>
                 <h3 class="book-detail__author">por ${book.author}</h3>
+                
+                ${seriesWarningHTML}
                 
                 <ul class="book-detail__meta-list">
                     <li><strong>ISBN:</strong> ${book.isbn}</li>
@@ -166,6 +279,8 @@
                 
                 <p class="book-detail__description">${book.description}</p>
                 
+                ${relatedBooksHTML}
+                
                 <div class="book-detail__footer">
                     <div class="book-detail__price">${generatePriceHTML(book)}</div>
                     <div class="book-detail__actions">
@@ -179,12 +294,11 @@
             </div>`;
     }
     
-    // --- 5. Punto de Entrada Principal ---
+    // --- 6. Punto de Entrada Principal ---
     document.addEventListener('DOMContentLoaded', () => {
         async function main() {
             books = await fetchBooks();
 
-            // Referencias al DOM
             const bookGrid = document.getElementById('book-grid');
             const bookListingView = document.getElementById('book-listing');
             const bookDetailView = document.getElementById('book-detail-view');
@@ -198,7 +312,6 @@
             const searchForm = document.getElementById('search-form');
             const clearSearchBtn = document.getElementById('clear-search-btn');
 
-            // Verificación
             if (!bookGrid || !bookListingView || !bookDetailView || !bookDetailContent || !backButton || !imageModal) {
                 console.error("Error de inicialización: Faltan elementos esenciales en el DOM.");
                 return;
@@ -229,7 +342,6 @@
                 isGridRendered = true;
             }
 
-            // Gestores de Lógica
             const modalManager = {
                 open: (imageSrc) => {
                     modalImage.src = imageSrc;
@@ -276,9 +388,7 @@
                 }
             };
 
-            // Funciones de compartir
             function copyShareLink(bookId) {
-                // Usar las páginas estáticas generadas
                 const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
                 const shareUrl = `${baseUrl}libro-${bookId}.html`;
                 
@@ -297,7 +407,6 @@
             }
 
             function shareOnFacebook(bookId) {
-                // Usar las páginas estáticas generadas
                 const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
                 const shareUrl = `${baseUrl}libro-${bookId}.html`;
                 const encodedUrl = encodeURIComponent(shareUrl);
@@ -337,7 +446,6 @@
                 }, 3000);
             }
 
-            // Event Listeners
             bookGrid.addEventListener('click', (event) => {
                 const card = event.target.closest('.book-card');
                 if (card && card.dataset.bookId) {
@@ -367,6 +475,13 @@
                 if (event.target.classList.contains('share-button--facebook')) {
                     const bookId = parseInt(event.target.dataset.bookId, 10);
                     shareOnFacebook(bookId);
+                }
+                
+                // Navegación a libro relacionado
+                const relatedBook = event.target.closest('.related-book');
+                if (relatedBook && relatedBook.dataset.bookId) {
+                    const bookId = parseInt(relatedBook.dataset.bookId, 10);
+                    router.navigateToBook(bookId);
                 }
             });
 
@@ -414,7 +529,6 @@
                 }
             });
 
-            // Procesamiento inicial
             const initialBookId = router.getBookIdFromHash();
             
             if (initialBookId) {
