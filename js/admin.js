@@ -122,7 +122,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="publisher">Editorial</label>
-                    <input type="text" id="publisher" name="publisher" value="${book.publisher || 'Editorial Planeta'}">
+                    <input type="text" id="publisher" name="publisher" value="${book.publisher || ''}">
                 </div>
                 <div class="form-group">
                     <label for="pages">Número de Páginas</label>
@@ -152,13 +152,17 @@
                         <option value="Otro" ${book.language === 'Otro' ? 'selected' : ''}>Otro</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="series">Serie</label>
+                    <input type="text" id="series" name="series" value="${book.seriesId || ''}">
+                </div>
             </div>
 
             <div class="form-grid">
 
                 <div class="form-group">
                     <label for="location">Ubicación</label>
-                    <input type="text" id="location" name="location" value="${book.location || 'Bogotá'}">
+                    <input type="text" id="location" name="location" value="${book.location || ''}">
                 </div>
                 <div class="form-group">
                     <label for="shippingClass">Clase de Envío</label>
@@ -316,6 +320,9 @@
             const bookData = {
                 id: bookId,
                 title: formData.get('title'),
+                seriesId: formData.get('series'),
+                volumeNumber: 0,
+                totalVolumes: 0,
                 author: formData.get('author'),
                 genre: formData.get('genre'),
                 condition: formData.get('condition'),
