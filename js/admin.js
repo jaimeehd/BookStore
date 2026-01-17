@@ -37,11 +37,40 @@
         return status;
     }
 
+    function getBookImages(book) {
+        // Retrocompatibilidad: si existe el array images, úsalo; si no, usa imageFile como único elemento
+        if (book.images && Array.isArray(book.images) && book.images.length > 0) {
+            return book.images;
+        }
+        if (book.imageFile && typeof book.imageFile === 'string' && book.imageFile.trim() !== '') {
+            return [book.imageFile];
+        }
+        return ['placeholder.jpg'];
+    }
+
     function generateBookCardHTML(book) {
-        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
-        return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div></div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
+        const images = getBookImages(book);
+        const coverImage = images[0]; // Primera imagen = portada
+        const imageSrc = coverImage && coverImage.startsWith('data:')
+            ? coverImage
+            : coverImage ? `${BASE_PATH}/images/${coverImage}` : PLACEHOLDER_IMAGE;
+
+        // Solo mostrar la portada en el listado
+        return `<article class="book-card" data-book-id="${book.id}">
+            <div class="book-card__image-container">
+                <img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
+                <div class="status-badge ${statusClass}">${statusText}</div>
+            </div>
+            <div class="book-card__content">
+                <h4 class="book-card__title">${book.title}</h4>
+                <p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p>
+                <p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p>
+                <p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p>
+                <div class="book-card__price">${generatePriceHTML(book)}</div>
+            </div>
+        </article>`;
     }
 
     // --- 3. LÓGICA DEL FORMULARIO DE EDICIÓN Y CREACIÓN ---
@@ -91,6 +120,13 @@
                     <label for="promoTag">Etiqueta Promocional</label>
                     <input type="text" id="promoTag" name="promoTag" value="${book.promoTag || ''}">
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="images">Imágenes del libro (máx. 5, la primera es la portada)</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple>
+                <div id="images-preview" class="images-preview"></div>
+                <small>La primera imagen será la portada. No cambies el tamaño de las imágenes.</small>
             </div>
 
             <div class="form-group">
@@ -214,19 +250,111 @@
                 editForm.innerHTML = generateEditFormHTML(book || {});
                 editModal.classList.add('visible');
                 document.body.classList.add('no-scroll');
-                
                 // Reiniciar scroll del contenido del modal a la parte superior
                 const modalContent = editModal.querySelector('.edit-modal-content');
                 if (modalContent) {
                     modalContent.scrollTop = 0;
                 }
-                
                 // Agregar event listeners para seleccionar contenido al hacer foco
                 const formInputs = editForm.querySelectorAll('input[type="text"], input[type="number"], input[type="url"], textarea');
                 formInputs.forEach(input => {
                     input.addEventListener('focus', function() {
                         this.select();
                     });
+                });
+
+                // Previsualización de imágenes y carga inicial si existen
+                const imagesInput = editForm.querySelector('#images');
+                const imagesPreview = editForm.querySelector('#images-preview');
+                let currentImages = [];
+                if (Array.isArray(book?.images) && book.images.length > 0) {
+                    currentImages = book.images.slice(0, 5);
+                } else if (book?.imageFile && typeof book.imageFile === 'string' && book.imageFile.trim() !== '') {
+                    currentImages = [book.imageFile];
+                }
+
+                function renderImagesPreview(imagesArr) {
+                    imagesPreview.innerHTML = imagesArr.map((img, idx) => {
+                        return `<div class="img-thumb${idx === 0 ? ' portada' : ''}" draggable="true" data-idx="${idx}" style="display:inline-block;position:relative;margin:2px;cursor:grab;" title="${idx === 0 ? 'Portada' : 'Imagen ' + (idx+1)}">
+                            <img src="${img}" alt="Imagen ${idx+1}" style="max-width:60px;max-height:60px;border:${idx===0?'2px solid #5D4037':'1px solid #ccc'};display:block;">
+                            ${idx === 0 ? '<span style=\"font-size:10px;color:#5D4037;\">Portada</span>' : ''}
+                            <button type="button" class="img-remove-btn" data-idx="${idx}" title="Eliminar" style="position:absolute;top:0;right:0;background:#fff;color:#b00;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-weight:bold;line-height:16px;padding:0;">&times;</button>
+                        </div>`;
+                    }).join('');
+
+                    // Botón eliminar
+                    imagesPreview.querySelectorAll('.img-remove-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const idx = parseInt(this.dataset.idx, 10);
+                            currentImages.splice(idx, 1);
+                            renderImagesPreview(currentImages);
+                            editForm.currentImages = currentImages;
+                        });
+                    });
+
+                    // Drag & Drop para reordenar
+                    let dragSrcIdx = null;
+                    imagesPreview.querySelectorAll('.img-thumb').forEach(thumb => {
+                        thumb.addEventListener('dragstart', function(e) {
+                            dragSrcIdx = parseInt(this.dataset.idx, 10);
+                            e.dataTransfer.effectAllowed = 'move';
+                            this.style.opacity = '0.4';
+                        });
+                        thumb.addEventListener('dragend', function(e) {
+                            this.style.opacity = '';
+                        });
+                        thumb.addEventListener('dragover', function(e) {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                        });
+                        thumb.addEventListener('drop', function(e) {
+                            e.preventDefault();
+                            const dropIdx = parseInt(this.dataset.idx, 10);
+                            if (dragSrcIdx !== null && dragSrcIdx !== dropIdx) {
+                                // Reordenar
+                                const moved = currentImages.splice(dragSrcIdx, 1)[0];
+                                currentImages.splice(dropIdx, 0, moved);
+                                renderImagesPreview(currentImages);
+                                editForm.currentImages = currentImages;
+                            }
+                            dragSrcIdx = null;
+                        });
+                    });
+                }
+                renderImagesPreview(currentImages);
+
+                imagesInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    if (files.length === 0) return;
+                    // Si ya hay imágenes, agregamos las nuevas (máx 5 en total)
+                    const totalImages = currentImages.length + files.length;
+                    if (totalImages > 5) {
+                        alert('Solo puedes tener hasta 5 imágenes en total.');
+                        imagesInput.value = '';
+                        return;
+                    }
+                    // Leer archivos como base64 y agregarlos
+                    const readers = files.map(file => {
+                        return new Promise(res => {
+                            const reader = new FileReader();
+                            reader.onload = ev => res(ev.target.result);
+                            reader.readAsDataURL(file);
+                        });
+                    });
+                    Promise.all(readers).then(imgs => {
+                        currentImages = currentImages.concat(imgs).slice(0, 5);
+                        renderImagesPreview(currentImages);
+                        editForm.currentImages = currentImages;
+                        imagesInput.value = '';
+                    });
+                });
+
+                // Guardar imágenes en el form para submit
+                editForm.currentImages = currentImages;
+                imagesInput.addEventListener('click', () => {
+                    // Reset para permitir volver a seleccionar las mismas imágenes
+                    imagesInput.value = '';
                 });
             },
             close: () => {
@@ -313,10 +441,24 @@
         // Submit del formulario (crear o editar)
         editForm.addEventListener('submit', (event) => {
             event.preventDefault();
+
             const formData = new FormData(event.target);
             const isNew = formData.get('isNew') === 'true';
             const bookId = parseInt(formData.get('id'), 10);
-            
+
+            // Manejo de imágenes
+            let imagesArr = editForm.currentImages || [];
+            // Si el usuario seleccionó nuevas imágenes, se actualiza el array
+            const imagesInput = editForm.querySelector('#images');
+            if (imagesInput && imagesInput.files && imagesInput.files.length > 0) {
+                // Ya se procesó en el eventListener, solo usar currentImages
+                imagesArr = editForm.currentImages;
+            } else if (Array.isArray(imagesArr) && imagesArr.length > 0) {
+                // Mantener imágenes existentes
+            } else {
+                imagesArr = [];
+            }
+
             const bookData = {
                 id: bookId,
                 title: formData.get('title'),
@@ -343,7 +485,8 @@
                 facebookUrl: formData.get('facebookUrl'),
                 location: formData.get('location'),
                 shippingClass: formData.get('shippingClass'),
-                deliveryPreference: formData.get('deliveryPreference') 
+                deliveryPreference: formData.get('deliveryPreference'),
+                images: imagesArr && imagesArr.length > 0 ? imagesArr.slice(0, 5) : undefined
             };
 
             if (isNew) {

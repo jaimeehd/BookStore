@@ -1,3 +1,13 @@
+    // Retrocompatibilidad: si existe el array images, úsalo; si no, usa imageFile como único elemento
+    function getBookImages(book) {
+        if (book.images && Array.isArray(book.images) && book.images.length > 0) {
+            return book.images;
+        }
+        if (book.imageFile && typeof book.imageFile === 'string' && book.imageFile.trim() !== '') {
+            return [book.imageFile];
+        }
+        return ['placeholder.jpg'];
+    }
 // Usamos un IIFE (Immediately Invoked Function Expression) para encapsular nuestro código.
 (function() {
     
@@ -236,7 +246,12 @@
     }
 
     function generateBookCardHTML(book) {
-        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
+        // Igual que admin: usar getBookImages y la primera imagen como portada
+        const images = getBookImages(book);
+        const coverImage = images[0];
+        const imageSrc = coverImage && coverImage.startsWith('data:')
+            ? coverImage
+            : coverImage ? `${BASE_PATH}/images/${coverImage}` : PLACEHOLDER_IMAGE;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
         
@@ -249,7 +264,29 @@
     function generateBookDetailHTML(book) {
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Vendido';
-        const imageSrc = book.imageFile ? `${BASE_PATH}/images/${book.imageFile}` : PLACEHOLDER_IMAGE;
+        // Portada y galería de imágenes (retrocompatible)
+        let images = [];
+        if (Array.isArray(book.images) && book.images.length > 0) {
+            images = book.images;
+        } else if (book.imageFile) {
+            images = [book.imageFile];
+        }
+        // Portada
+        let portadaSrc = PLACEHOLDER_IMAGE;
+        if (images.length > 0) {
+            portadaSrc = images[0].startsWith('data:') ? images[0] : `${BASE_PATH}/images/${images[0]}`;
+        }
+
+        // Galería simple de miniaturas (máx 5, sin navegación)
+        let galleryHTML = '';
+        if (images.length > 1) {
+            galleryHTML = `<div class="book-detail-gallery">`;
+            images.slice(0, 5).forEach((img, idx) => {
+                const thumbSrc = img.startsWith('data:') ? img : `${BASE_PATH}/images/${img}`;
+                galleryHTML += `<img src="${thumbSrc}" class="book-detail-thumb" data-idx="${idx}" alt="Imagen ${idx+1}" style="width:40px;height:40px;object-fit:contain;background:#fff;margin:2px;cursor:pointer;border:${idx===0?'2px solid #5D4037':'1px solid #ccc'};">`;
+            });
+            galleryHTML += `</div>`;
+        }
         
         const defectsHTML = (book.defects && book.defects.trim() !== '' && book.defects.toLowerCase() !== 'ninguno') 
             ? `<div class="book-detail__defects"><strong>⚠️ Defectos:</strong><p>${book.defects}</p></div>` 
@@ -265,7 +302,10 @@
         const relatedBooksHTML = generateRelatedBooksHTML(relatedBooks);
         
          return `
-            <img src="${imageSrc}" alt="Portada de ${book.title}" class="book-detail__cover">
+            <div class="book-detail__images">
+                <img src="${portadaSrc}" alt="Portada de ${book.title}" class="book-detail__cover" id="main-book-image" style="cursor:pointer;">
+                ${galleryHTML}
+            </div>
             <div class="book-detail__info">
                 <h2 class="book-detail__title">${book.title}</h2>
                 <h3 class="book-detail__author">por ${book.author}</h3>
@@ -305,6 +345,7 @@
     
     // --- 6. Punto de Entrada Principal ---
     document.addEventListener('DOMContentLoaded', () => {
+        // (Eliminada la lógica de navegación y botones de la galería)
         async function main() {
             books = await fetchBooks();
 
@@ -320,6 +361,30 @@
             const searchInput = document.getElementById('search-input');
             const searchForm = document.getElementById('search-form');
             const clearSearchBtn = document.getElementById('clear-search-btn');
+
+            // Evento para galería: cambiar portada al hacer click en miniatura
+            bookDetailContent.addEventListener('click', function(e) {
+                if (e.target.classList.contains('book-detail-thumb')) {
+                    const idx = parseInt(e.target.dataset.idx, 10);
+                    const bookId = bookDetailContent.querySelector('.share-button--copy')?.dataset.bookId;
+                    const book = books.find(b => b.id == bookId);
+                    if (!book) return;
+                    let images = [];
+                    if (Array.isArray(book.images) && book.images.length > 0) {
+                        images = book.images;
+                    } else if (book.imageFile) {
+                        images = [book.imageFile];
+                    }
+                    if (images[idx]) {
+                        const mainImg = document.getElementById('main-book-image');
+                        mainImg.src = images[idx].startsWith('data:') ? images[idx] : `${BASE_PATH}/images/${images[idx]}`;
+                        // Restaurar borde inline
+                        bookDetailContent.querySelectorAll('.book-detail-thumb').forEach((thumb, i) => {
+                            thumb.style.border = (i === idx) ? '2px solid #5D4037' : '1px solid #ccc';
+                        });
+                    }
+                }
+            });
 
             if (!bookGrid || !bookListingView || !bookDetailView || !bookDetailContent || !backButton || !imageModal) {
                 console.error("Error de inicialización: Faltan elementos esenciales en el DOM.");
