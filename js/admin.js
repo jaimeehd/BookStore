@@ -38,7 +38,6 @@
     }
 
     function getBookImages(book) {
-        // Retrocompatibilidad: si existe el array images, úsalo; si no, usa imageFile como único elemento
         if (book.images && Array.isArray(book.images) && book.images.length > 0) {
             return book.images;
         }
@@ -51,17 +50,17 @@
     function generateBookCardHTML(book) {
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
+        const seriesBadge = book.seriesId ? `<span class="series-badge">📚 Serie</span>` : '';
         const images = getBookImages(book);
-        const coverImage = images[0]; // Primera imagen = portada
+        const coverImage = images[0];
         const imageSrc = coverImage && coverImage.startsWith('data:')
             ? coverImage
             : coverImage ? `${BASE_PATH}/images/${coverImage}` : PLACEHOLDER_IMAGE;
 
-        // Solo mostrar la portada en el listado
         return `<article class="book-card" data-book-id="${book.id}">
             <div class="book-card__image-container">
                 <img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
-                <div class="status-badge ${statusClass}">${statusText}</div>
+                <div class="status-badge ${statusClass}">${statusText}</div>${seriesBadge}
             </div>
             <div class="book-card__content">
                 <h4 class="book-card__title">${book.title}</h4>
@@ -262,6 +261,14 @@
                         this.select();
                     });
                 });
+
+                // Poner foco en el primer campo editable después de que el modal sea visible
+                setTimeout(() => {
+                    const firstField = editForm.querySelector('input:not([type="hidden"]), textarea, select');
+                    if (firstField) {
+                        firstField.focus();
+                    }
+                }, 100);
 
                 // Previsualización de imágenes y carga inicial si existen
                 const imagesInput = editForm.querySelector('#images');
