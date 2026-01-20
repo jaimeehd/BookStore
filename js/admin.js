@@ -280,11 +280,18 @@
                     currentImages = [book.imageFile];
                 }
 
-                function renderImagesPreview(imagesArr) {
+                function renderImagesPreview(imagesArr, previewUrls = null) {
+                    // Si no hay URLs de previsualización, usar las rutas de imágenes
+                    const displayUrls = previewUrls || imagesArr.map(img => {
+                        if (img.startsWith('data:')) return img;
+                        return `${BASE_PATH}/images/${img}`;
+                    });
+                    
                     imagesPreview.innerHTML = imagesArr.map((img, idx) => {
+                        const displayUrl = displayUrls[idx] || `${BASE_PATH}/images/${img}`;
                         return `<div class="img-thumb${idx === 0 ? ' portada' : ''}" draggable="true" data-idx="${idx}" style="display:inline-block;position:relative;margin:2px;cursor:grab;" title="${idx === 0 ? 'Portada' : 'Imagen ' + (idx+1)}">
-                            <img src="${img}" alt="Imagen ${idx+1}" style="max-width:60px;max-height:60px;border:${idx===0?'2px solid #5D4037':'1px solid #ccc'};display:block;">
-                            ${idx === 0 ? '<span style=\"font-size:10px;color:#5D4037;\">Portada</span>' : ''}
+                            <img src="${displayUrl}" alt="Imagen ${idx+1}" style="max-width:60px;max-height:60px;border:${idx===0?'2px solid #5D4037':'1px solid #ccc'};display:block;">
+                            ${idx === 0 ? '<span style="font-size:10px;color:#5D4037;">Portada</span>' : ''}
                             <button type="button" class="img-remove-btn" data-idx="${idx}" title="Eliminar" style="position:absolute;top:0;right:0;background:#fff;color:#b00;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-weight:bold;line-height:16px;padding:0;">&times;</button>
                         </div>`;
                     }).join('');
@@ -341,17 +348,29 @@
                         imagesInput.value = '';
                         return;
                     }
-                    // Leer archivos como base64 y agregarlos
-                    const readers = files.map(file => {
-                        return new Promise(res => {
+                    
+                    // Procesar cada archivo
+                    const imagePromises = files.map((file) => {
+                        return new Promise((resolve) => {
                             const reader = new FileReader();
-                            reader.onload = ev => res(ev.target.result);
+                            reader.onload = (ev) => {
+                                resolve({
+                                    fileName: file.name,
+                                    dataUrl: ev.target.result
+                                });
+                            };
                             reader.readAsDataURL(file);
                         });
                     });
-                    Promise.all(readers).then(imgs => {
-                        currentImages = currentImages.concat(imgs).slice(0, 5);
-                        renderImagesPreview(currentImages);
+                    
+                    Promise.all(imagePromises).then(images => {
+                        // Agregar solo los nombres de archivo al array
+                        const newImageNames = images.map(img => img.fileName);
+                        currentImages = currentImages.concat(newImageNames).slice(0, 5);
+                        
+                        // Para la previsualización, crear URLs temporales
+                        const previewImages = images.map(img => img.dataUrl);
+                        renderImagesPreview(currentImages, previewImages);
                         editForm.currentImages = currentImages;
                         imagesInput.value = '';
                     });
@@ -455,16 +474,6 @@
 
             // Manejo de imágenes
             let imagesArr = editForm.currentImages || [];
-            // Si el usuario seleccionó nuevas imágenes, se actualiza el array
-            const imagesInput = editForm.querySelector('#images');
-            if (imagesInput && imagesInput.files && imagesInput.files.length > 0) {
-                // Ya se procesó en el eventListener, solo usar currentImages
-                imagesArr = editForm.currentImages;
-            } else if (Array.isArray(imagesArr) && imagesArr.length > 0) {
-                // Mantener imágenes existentes
-            } else {
-                imagesArr = [];
-            }
 
             const bookData = {
                 id: bookId,
