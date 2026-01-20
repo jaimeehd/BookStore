@@ -303,7 +303,7 @@
         
          return `
             <div class="book-detail__images">
-                <img src="${portadaSrc}" alt="Portada de ${book.title}" class="book-detail__cover" id="main-book-image" style="cursor:pointer;">
+                <img src="${portadaSrc}" alt="Portada de ${book.title}" class="book-detail__cover" id="main-book-image" style="cursor:pointer;" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
                 ${galleryHTML}
             </div>
             <div class="book-detail__info">
