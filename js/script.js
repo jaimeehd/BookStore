@@ -204,18 +204,25 @@
             const price = b.discountPrice && b.discountPrice < b.price 
                 ? priceFormatter.format(b.discountPrice) 
                 : priceFormatter.format(b.price);
-            
+             // FIX: Usar getBookImages para obtener la imagen correctamente
+            const images = getBookImages(b);
+            const coverImage = images[0];
+            const imageSrc = coverImage && coverImage.startsWith('data:')
+                ? coverImage
+                : coverImage ? `${BASE_PATH}/images/${coverImage}` : PLACEHOLDER_IMAGE;
+
             return `
                 <div class="related-book ${statusClass}" data-book-id="${b.id}">
-                    <img src="${b.imageFile ? `${BASE_PATH}/images/${b.imageFile}` : PLACEHOLDER_IMAGE}" 
-                         alt="${b.title}" 
-                         class="related-book__image">
-                    <div class="related-book__info">
-                        <h4 class="related-book__title">${b.title}</h4>
-                        <p class="related-book__price">${price}</p>
-                        <span class="related-book__status">${statusText}</span>
-                    </div>
-                </div>`;
+                <img src="${imageSrc}" 
+                     alt="${b.title}" 
+                     class="related-book__image"
+                     onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
+                <div class="related-book__info">
+                    <h4 class="related-book__title">${b.title}</h4>
+                    <p class="related-book__price">${price}</p>
+                    <span class="related-book__status">${statusText}</span>
+                </div>
+            </div>`;
         }).join('');
         
         return `
