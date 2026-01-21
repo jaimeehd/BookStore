@@ -1,20 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
-// Configuración - Solo esto se modifica según el proyecto
+// =====================================================
+// Configuración
+// =====================================================
 const CONFIG = {
-    githubUser: 'jaimeehd',
-    repoName: 'bookstore',
     siteName: 'El Rincón del Lector',
     booksJsonPath: './books.json',
     outputDir: './'
 };
 
-// Construir URLs base dinámicamente
-const BASE_URL = `https://${CONFIG.githubUser}.github.io/${CONFIG.repoName}`;
-const IMAGES_URL = `${BASE_URL}/images`;
+// =====================================================
+// Funciones de Utilidad
+// =====================================================
 
-// Función para normalizar nombres de archivo
+// Normalizar nombres de archivo
 function normalizeFileName(text) {
     return text
         .toLowerCase()
@@ -26,7 +26,7 @@ function normalizeFileName(text) {
         .trim();
 }
 
-// Función para obtener el nombre de la primera imagen de un libro
+// Obtener nombre de la primera imagen de un libro
 function getBookImageName(book) {
     const titleNorm = normalizeFileName(book.title);
     const authorNorm = normalizeFileName(book.author);
@@ -54,19 +54,20 @@ function formatPrice(price) {
     }).format(price);
 }
 
-// Generar descripción del libro
+// Generar descripción del libro (escapando comillas para HTML)
 function generateDescription(book) {
     const price = book.discountPrice && book.discountPrice < book.price 
         ? formatPrice(book.discountPrice) 
         : formatPrice(book.price);
     
-    return `${book.author} - ${book.genre}. ${book.condition}. Precio: ${price}. ${book.description.substring(0, 120)}...`;
+    const desc = `${book.author} - ${book.genre}. ${book.condition}. Precio: ${price}. ${book.description.substring(0, 120)}...`;
+    return desc.replace(/"/g, '&quot;');
 }
 
-// Generar URL de imagen
+// Generar URL de imagen (relativa)
 function getImageUrl(book) {
     const imageName = getBookImageName(book);
-    return `${IMAGES_URL}/${imageName}`;
+    return `./images/${imageName}`;
 }
 
 // Generar HTML para defectos (solo si existen)
@@ -102,14 +103,15 @@ function generatePriceHTML(book) {
         </div>`;
 }
 
+// =====================================================
 // Plantilla HTML
+// =====================================================
 function generateBookPage(book) {
     const description = generateDescription(book);
     const imageUrl = getImageUrl(book);
-    const pageUrl = `${BASE_URL}/libro-${book.id}.html`;
-    const redirectUrl = `${BASE_URL}/index.html#libro/${book.id}`;
     const defectsHTML = generateDefectsHTML(book);
     const priceHTML = generatePriceHTML(book);
+    const redirectUrl = `./index.html#libro/${book.id}`;
     
     return `<!DOCTYPE html>
 <html lang="es">
@@ -125,7 +127,6 @@ function generateBookPage(book) {
     <meta property="og:site_name" content="${CONFIG.siteName}">
     <meta property="og:title" content="${book.title} - ${CONFIG.siteName}">
     <meta property="og:description" content="${description}">
-    <meta property="og:url" content="${pageUrl}">
     <meta property="og:image" content="${imageUrl}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -383,7 +384,7 @@ function generateBookPage(book) {
     <main class="container">
         <div class="book-info">
             <div class="book-cover">
-                <img src="${imageUrl}" alt="Portada de ${book.title}" onerror="this.onerror=null; this.src='${IMAGES_URL}/placeholder.jpg';">
+                <img src="${imageUrl}" alt="Portada de ${book.title}" onerror="this.onerror=null; this.src='./images/placeholder.jpg';">
             </div>
             <div class="book-details">
                 <h2 class="book-title">${book.title}</h2>
@@ -422,15 +423,16 @@ function generateBookPage(book) {
 </html>`;
 }
 
-// Generar archivos
+// =====================================================
+// Generación de Archivos
+// =====================================================
 function generatePages() {
     const books = loadBooks();
     let successCount = 0;
     let errorCount = 0;
     
-    console.log('\n🚀 Generando páginas HTML...\n');
-    console.log(`📦 Total de libros: ${books.length}`);
-    console.log(`🌐 URL base: ${BASE_URL}\n`);
+    console.log('\n🚀 Generando páginas HTML con rutas relativas...\n');
+    console.log(`📦 Total de libros: ${books.length}\n`);
     
     // Generar lista de imágenes requeridas
     console.log('📸 Imágenes requeridas por libro:\n');
@@ -438,7 +440,7 @@ function generatePages() {
         const imageName = getBookImageName(book);
         console.log(`   ${imageName} -> "${book.title}"`);
     });
-    console.log('\n' + '='.repeat(60) + '\n');
+    console.log('\n' + '='.repeat(70) + '\n');
     
     books.forEach(book => {
         try {
@@ -453,34 +455,41 @@ function generatePages() {
         }
     });
     
-    console.log('\n' + '='.repeat(60));
+    console.log('\n' + '='.repeat(70));
     console.log(`✅ Páginas generadas exitosamente: ${successCount}`);
     if (errorCount > 0) {
         console.log(`❌ Errores: ${errorCount}`);
     }
-    console.log('='.repeat(60));
+    console.log('='.repeat(70));
     
-    console.log('\n📋 URLs para compartir en Facebook:\n');
-    books.slice(0, 5).forEach(book => {
-        console.log(`   ${BASE_URL}/libro-${book.id}.html`);
-    });
-    if (books.length > 5) {
-        console.log(`   ... y ${books.length - 5} más`);
-    }
+    console.log('\n💡 Páginas generadas con rutas relativas');
+    console.log('   ✅ Compatible con GitHub Pages');
+    console.log('   ✅ Compatible con Netlify');
+    console.log('   ✅ Compatible con Vercel');
+    console.log('   ✅ Compatible con cualquier hosting\n');
     
-    console.log('\n💡 Próximos pasos:');
-    console.log('   1. Asegúrate de tener todas las imágenes en /images/');
-    console.log('   2. git add libro-*.html');
-    console.log('   3. git commit -m "Actualizar páginas de libros"');
-    console.log('   4. git push origin main');
+    console.log('📋 Características:');
+    console.log('   • Rutas de imágenes: ./images/');
+    console.log('   • Redirección: ./index.html#libro/ID');
+    console.log('   • Meta tags Open Graph optimizados');
+    console.log('   • Fallback a placeholder.jpg automático\n');
+    
+    console.log('💡 Próximos pasos:');
+    console.log('   1. Verifica que todas las imágenes estén en /images/');
+    console.log('   2. git add libro-*.html images/');
+    console.log('   3. git commit -m "Páginas con rutas relativas"');
+    console.log('   4. git push');
     console.log('   5. Probar en Facebook Debugger');
     console.log('   6. https://developers.facebook.com/tools/debug/\n');
 }
 
+// =====================================================
 // Ejecutar
+// =====================================================
 try {
     generatePages();
 } catch (error) {
     console.error('\n❌ Error fatal:', error.message);
+    console.error(error.stack);
     process.exit(1);
 }
