@@ -217,6 +217,9 @@ function getBookImages(book) {
                     <img src="${imageSrc}" 
                          alt="${b.title}" 
                          class="related-book__image"
+                         width="50"
+                         height="69"
+                         loading="lazy"
                          onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
                     <div class="related-book__info">
                         <h4 class="related-book__title">${b.title}</h4>
@@ -252,14 +255,17 @@ function getBookImages(book) {
         return status;
     }
 
-    function generateBookCardHTML(book) {
+    function generateBookCardHTML(book, index = 0) {
         const images = getBookImages(book);
         const imageSrc = `${BASE_PATH}/images/${images[0]}`;
         const statusClass = book.status === 'available' ? 'status-badge--available' : 'status-badge--sold';
         const statusText = book.status === 'available' ? 'Disponible' : 'Agotado';
         const seriesBadge = book.seriesId ? `<span class="series-badge">📚 Serie</span>` : '';
         
-        return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div>${seriesBadge}</div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
+        // Lazy loading para imágenes después de las primeras 6 (above the fold)
+        const lazyLoad = index > 5 ? 'loading="lazy"' : '';
+        
+        return `<article class="book-card" data-book-id="${book.id}"><div class="book-card__image-container"><img src="${imageSrc}" alt="Portada de ${book.title}" class="book-card__image" width="280" height="400" ${lazyLoad} onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"><div class="status-badge ${statusClass}">${statusText}</div>${seriesBadge}</div><div class="book-card__content"><h4 class="book-card__title">${book.title}</h4><p class="book-card__meta"><strong>Autor:</strong> ${book.author}</p><p class="book-card__meta"><strong>Género:</strong> ${book.genre}</p><p class="book-card__meta"><strong>Estado:</strong> ${book.condition}</p><div class="book-card__price">${generatePriceHTML(book)}</div></div></article>`;
     }
     
     function generateBookDetailHTML(book) {
@@ -294,7 +300,14 @@ function getBookImages(book) {
         
          return `
             <div class="book-detail__images">
-                <img src="${portadaSrc}" alt="Portada de ${book.title}" class="book-detail__cover" id="main-book-image" style="cursor:pointer;" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
+                <img src="${portadaSrc}" 
+                     alt="Portada de ${book.title}" 
+                     class="book-detail__cover" 
+                     id="main-book-image" 
+                     width="250"
+                     height="375"
+                     style="cursor:pointer;" 
+                     onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">
                 ${galleryHTML}
             </div>
             <div class="book-detail__info">
@@ -390,7 +403,7 @@ function getBookImages(book) {
                 });
 
                 if (filteredBooks.length > 0) {
-                    bookGrid.innerHTML = filteredBooks.map(generateBookCardHTML).join('');
+                    bookGrid.innerHTML = filteredBooks.map((book, index) => generateBookCardHTML(book, index)).join('');
                 } else {
                     bookGrid.innerHTML = `<p class="no-results-message">No se encontraron libros para tu búsqueda.</p>`;
                 }
