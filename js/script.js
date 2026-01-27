@@ -609,3 +609,21 @@ function getBookImages(book) {
         main();
     });
 })();
+// WhatsApp FAB tracking
+(function () {
+  var wa = document.querySelector('.fab-whatsapp');
+  if (!wa) return;
+  wa.addEventListener('click', function () {
+    var phone = wa.dataset.phone || '573008283248';
+    var message = wa.dataset.message || 'Hola, estoy interesado en sus productos';
+    var pagePath = window.location.pathname;
+    // dataLayer (GA4)
+    if (typeof window.dataLayer !== 'undefined') {
+      window.dataLayer.push({ event: 'wa_click', wa_phone: phone, wa_message: message, wa_page: pagePath });
+    }
+    // GA4 vía gtag (si está disponible)
+    if (typeof window.gtag === 'function') {
+      gtag('event', 'wa_click', { 'phone_number': phone, 'page_path': pagePath });
+    }
+  });
+})();
